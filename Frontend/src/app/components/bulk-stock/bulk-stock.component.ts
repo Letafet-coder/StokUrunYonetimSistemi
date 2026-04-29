@@ -11,6 +11,7 @@ import { ToastModule } from 'primeng/toast';
 import { Product } from '../../models/product.model';
 import { Warehouse, StorageLocation } from '../../models/warehouse.model';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { InputNumberModule } from 'primeng/inputnumber';
 
 interface BulkItem {
   productId?: number;
@@ -22,7 +23,7 @@ interface BulkItem {
 @Component({
   selector: 'app-bulk-stock',
   standalone: true,
-  imports: [CommonModule, TableModule, ButtonModule, SelectModule, InputTextModule, FormsModule, ToastModule, TranslatePipe],
+  imports: [CommonModule, TableModule, ButtonModule, SelectModule, InputTextModule, FormsModule, ToastModule, TranslatePipe, InputNumberModule],
   providers: [MessageService],
   template: `
     <div class="p-4">
@@ -38,12 +39,34 @@ interface BulkItem {
           </div>
         </div>
 
-        <p-table [value]="items" [responsiveLayout]="'scroll'" styleClass="p-datatable-gridlines">
+        <div class="mb-6 p-4 bg-50 border-round-xl border-1 border-soft flex align-items-center gap-4 shadow-sm">
+            <div class="w-4rem h-4rem border-circle bg-primary-100 text-primary flex align-items-center justify-content-center">
+                <i class="pi pi-building text-2xl"></i>
+            </div>
+            <div class="flex-1">
+                <label class="block font-bold text-900 mb-2">{{ 'bulk_stock.warehouse' | translate }}</label>
+                <p-select [options]="warehouses" [(ngModel)]="globalWarehouseId" optionLabel="name" optionValue="id" 
+                         [placeholder]="'bulk_stock.warehouse' | translate" (onChange)="onGlobalWarehouseChange()" 
+                         styleClass="w-full md:w-25rem modern-select">
+                    <ng-template pTemplate="selectedItem" let-item>
+                        {{item.name | translate}}
+                    </ng-template>
+                    <ng-template pTemplate="item" let-item>
+                        {{item.name | translate}}
+                    </ng-template>
+                </p-select>
+            </div>
+            <div class="hidden md:block text-right opacity-60">
+                <p class="m-0 text-sm font-bold">{{ 'bulk_stock.total_rows' | translate }}: {{items.length}}</p>
+                <p class="m-0 text-xs">{{ 'bulk_stock.valid_rows' | translate }}: {{getValidCount()}}</p>
+            </div>
+        </div>
+
+        <p-table [value]="items" responsiveLayout="scroll" styleClass="modern-table">
           <ng-template pTemplate="header">
             <tr>
               <th>{{ 'bulk_stock.product' | translate }}</th>
               <th>{{ 'bulk_stock.quantity' | translate }}</th>
-              <th>{{ 'bulk_stock.warehouse' | translate }}</th>
               <th>{{ 'bulk_stock.location' | translate }}</th>
               <th style="width: 50px"></th>
             </tr>
@@ -54,13 +77,17 @@ interface BulkItem {
                 <p-select [options]="products" [(ngModel)]="item.productId" optionLabel="name" optionValue="id" [filter]="true" filterBy="name" [placeholder]="'bulk_stock.product' | translate" styleClass="w-full"></p-select>
               </td>
               <td>
-                <input pInputText type="number" [(ngModel)]="item.quantity" class="w-full" />
+                <p-inputNumber [(ngModel)]="item.quantity" [min]="1" styleClass="w-full"></p-inputNumber>
               </td>
               <td>
-                <p-select [options]="warehouses" [(ngModel)]="item.warehouseId" optionLabel="name" optionValue="id" [placeholder]="'bulk_stock.warehouse' | translate" (onChange)="onWarehouseChange(item)" styleClass="w-full"></p-select>
-              </td>
-              <td>
-                <p-select [options]="getLocations(item.warehouseId)" [(ngModel)]="item.locationId" optionLabel="name" optionValue="id" [placeholder]="'bulk_stock.location' | translate" styleClass="w-full"></p-select>
+                <p-select [options]="getLocations(globalWarehouseId)" [(ngModel)]="item.locationId" optionLabel="name" optionValue="id" [placeholder]="'bulk_stock.location' | translate" styleClass="w-full">
+                    <ng-template pTemplate="selectedItem" let-item>
+                        {{item.name | translate}}
+                    </ng-template>
+                    <ng-template pTemplate="item" let-item>
+                        {{item.name | translate}}
+                    </ng-template>
+                </p-select>
               </td>
               <td>
                 <p-button icon="pi pi-trash" (click)="removeRow(index)" styleClass="p-button-rounded p-button-text p-button-danger"></p-button>
@@ -86,6 +113,7 @@ export class BulkStockComponent implements OnInit {
   warehouses: Warehouse[] = [];
   locations: StorageLocation[] = [];
   items: BulkItem[] = [];
+  globalWarehouseId?: number;
   loading = false;
 
   ngOnInit() {
@@ -107,8 +135,12 @@ export class BulkStockComponent implements OnInit {
     this.items.splice(index, 1);
   }
 
-  onWarehouseChange(item: BulkItem) {
-    item.locationId = undefined;
+  onGlobalWarehouseChange() {
+    this.items.forEach(i => i.locationId = undefined);
+  }
+
+  getValidCount(): number {
+    return this.items.filter(i => i.productId && i.quantity > 0 && i.locationId).length;
   }
 
   getLocations(warehouseId?: number): StorageLocation[] {
@@ -117,7 +149,10 @@ export class BulkStockComponent implements OnInit {
   }
 
   saveAll() {
-    const validItems = this.items.filter(i => i.productId && i.quantity > 0 && i.locationId);
+    const validItems = this.items.filter(i => i.productId && i.quantity > 0 && i.locationId).map(i => ({
+      ...i,
+      warehouseId: this.globalWarehouseId
+    }));
     if (validItems.length === 0) {
       this.messageService.add({ severity: 'warn', summary: 'Uyarı', detail: 'Lütfen geçerli satırları doldurun.' });
       return;

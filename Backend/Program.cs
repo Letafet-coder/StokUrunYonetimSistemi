@@ -101,6 +101,7 @@ app.UseCors("AllowAngular");
 app.UseAuthentication();
 app.UseMiddleware<MaintenanceMiddleware>();
 app.UseAuthorization();
+app.UseStaticFiles();
 
 app.MapControllers();
 
@@ -166,9 +167,9 @@ using (var scope = app.Services.CreateScope())
         // Seed some initial stocks
         db.ProductStocks.AddRange(new List<ProductStock>
         {
-            new ProductStock { ProductId = products[0].Id, LocationId = 1, Quantity = 10 },
-            new ProductStock { ProductId = products[1].Id, LocationId = 1, Quantity = 50 },
-            new ProductStock { ProductId = products[2].Id, LocationId = 1, Quantity = 100 }
+            new ProductStock { ProductId = products[0].Id, WarehouseId = 1, LocationId = 1, Quantity = 10 },
+            new ProductStock { ProductId = products[1].Id, WarehouseId = 1, LocationId = 1, Quantity = 50 },
+            new ProductStock { ProductId = products[2].Id, WarehouseId = 1, LocationId = 1, Quantity = 100 }
         });
         db.SaveChanges();
     }

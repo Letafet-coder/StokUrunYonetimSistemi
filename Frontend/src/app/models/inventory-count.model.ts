@@ -6,6 +6,7 @@ export interface InventoryCount {
   date: Date | string;
   description?: string;
   status: string; // 'Completed', 'Draft'
+  warehouseId?: number;
   createdByUserId: number;
   createdByUser?: User;
   items: InventoryCountItem[];

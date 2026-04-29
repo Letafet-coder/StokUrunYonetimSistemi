@@ -23,6 +23,7 @@ import { MenuItem } from 'primeng/api';
     ButtonModule, RouterModule, TranslatePipe, SkeletonModule,
     ChartModule, SpeedDialModule
   ],
+  providers: [TranslatePipe],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
@@ -50,6 +51,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private apiService = inject(ApiService);
   private themeService = inject(ThemeService);
   private router = inject(Router);
+  private translatePipe = inject(TranslatePipe);
 
   constructor() {
     // Re-initialize charts when theme changes
@@ -150,7 +152,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       labels: trend.map((t: any) => new Date(t.date).toLocaleDateString('tr-TR', { weekday: 'short' })),
       datasets: [
         {
-          label: 'Günlük Hareket Sayısı',
+          label: this.translatePipe.transform('dashboard.recent_movements_title'),
           data: trend.map((t: any) => t.count),
           fill: true,
           borderColor: isDark ? '#60a5fa' : '#3B82F6',
@@ -195,7 +197,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const hasData = dist.some((d: any) => d.totalValue > 0);
 
     this.pieData = {
-      labels: dist.map((d: any) => d.categoryName),
+      labels: dist.map((d: any) => this.translatePipe.transform(d.categoryName)),
       datasets: [
         {
           data: dist.map((d: any) => d.totalValue),

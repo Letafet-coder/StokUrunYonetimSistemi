@@ -53,16 +53,26 @@
     <!-- NEW AUDIT VIEW -->
     @if (viewMode === 'new') {
         <div class="grid p-fluid mb-4">
-            <div class="col-12 md:col-8">
+            <div class="col-12 md:col-6">
                 <label class="block font-bold mb-2">{{ 'categories.description' | translate }}</label>
                 <div class="p-inputgroup">
                     <span class="p-inputgroup-addon bg-white border-right-none"><i class="pi pi-pencil"></i></span>
                     <input pInputText [(ngModel)]="description" [placeholder]="'audit.desc_placeholder' | translate" class="border-left-none" />
                 </div>
             </div>
-            <div class="col-12 md:col-4">
+            <div class="col-12 md:col-3">
+                <label class="block font-bold mb-2">{{ 'bulk_stock.warehouse' | translate }}</label>
+                <p-select [options]="warehouses" [(ngModel)]="selectedWarehouseId" optionLabel="name" optionValue="id" 
+                         [placeholder]="'bulk_stock.warehouse' | translate" styleClass="w-full modern-select"></p-select>
+            </div>
+            <div class="col-12 md:col-3">
                 <label class="block font-bold mb-2">{{ 'products.category' | translate }} (Filtre)</label>
-                <p-select [options]="categories" [(ngModel)]="selectedCategoryId" optionLabel="name" optionValue="id" [showClear]="true" placeholder="Tüm Kategoriler" styleClass="w-full"></p-select>
+                <p-select [options]="categories" [(ngModel)]="selectedCategoryId" optionLabel="name" optionValue="id" 
+                         [placeholder]="'products.category' | translate" [showClear]="true" styleClass="w-full modern-select"></p-select>
+            </div>
+            <div class="col-12 flex justify-content-end mt-2">
+                <p-button [label]="'audit.start_new' | translate" icon="pi pi-play" (onClick)="startNewAudit()" 
+                         [loading]="loading" [disabled]="!selectedWarehouseId" styleClass="p-button-raised bg-primary border-none px-6 w-fit"></p-button>
             </div>
         </div>
 

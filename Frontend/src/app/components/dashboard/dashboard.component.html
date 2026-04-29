@@ -6,12 +6,12 @@
             <p class="text-secondary m-0 mt-1 opacity-70">{{ 'dashboard.recent_desc' | translate }}</p>
             <!-- Corner Ribbon -->
             <div class="absolute top-0 right-0 transform translate-x-100 -translate-y-50">
-                 <p-tag value="Canlı Sistem" severity="success" [rounded]="true" icon="pi pi-bolt" styleClass="px-3 py-1 shadow-premium animate-pulse"></p-tag>
+                 <p-tag [value]="'dashboard.live_system' | translate" severity="success" [rounded]="true" icon="pi pi-bolt" styleClass="px-3 py-1 shadow-premium animate-pulse"></p-tag>
             </div>
         </div>
         <div class="flex gap-2">
-            <button pButton icon="pi pi-file-export" label="Rapor Al" routerLink="/reports" class="p-button-secondary p-button-outlined p-button-rounded transition-smooth hover-shine"></button>
-            <button pButton icon="pi pi-refresh" [loading]="loading()" (click)="refreshData()" label="Verileri Güncelle" class="p-button-outlined p-button-rounded transition-smooth"></button>
+            <button pButton icon="pi pi-file-export" [label]="'dashboard.export_report' | translate" routerLink="/reports" class="p-button-secondary p-button-outlined p-button-rounded transition-smooth hover-shine"></button>
+            <button pButton icon="pi pi-refresh" [loading]="loading()" (click)="refreshData()" [label]="'dashboard.update_data' | translate" class="p-button-outlined p-button-rounded transition-smooth"></button>
         </div>
     </div>
 
@@ -42,7 +42,7 @@
                         <i class="pi pi-exclamation-triangle text-xl"></i>
                     </div>
                     @if (displayedStats().lowStockCount > 0) {
-                        <p-tag severity="danger" value="Kritik" [rounded]="true" styleClass="pulse-critical px-2"></p-tag>
+                        <p-tag severity="danger" [value]="'products.status_critical' | translate" [rounded]="true" styleClass="pulse-critical px-2"></p-tag>
                     }
                 </div>
                 <span class="text-secondary font-medium block mb-1">{{ 'dashboard.low_stock_alerts' | translate }}</span>
@@ -62,7 +62,7 @@
                         <i class="pi pi-check-square text-xl"></i>
                     </div>
                 </div>
-                <span class="text-secondary font-medium block mb-1">Stok Sayımları</span>
+                <span class="text-secondary font-medium block mb-1">{{ 'dashboard.inventory_counts' | translate }}</span>
                 @if (loading() && !stats()) {
                     <p-skeleton width="4rem" height="2rem"></p-skeleton>
                 } @else {
@@ -95,8 +95,8 @@
             <div class="glass-card border-round-2xl p-4 h-full">
                 <div class="flex align-items-center justify-content-between mb-4">
                     <div>
-                        <h3 class="m-0 text-900 font-bold">Stok Hareket Trendi</h3>
-                        <p class="m-0 text-xs text-secondary opacity-70 mt-1">Son 7 günlük işlem yoğunluğu</p>
+                        <h3 class="m-0 text-900 font-bold">{{ 'dashboard.movement_trend' | translate }}</h3>
+                        <p class="m-0 text-xs text-secondary opacity-70 mt-1">{{ 'dashboard.movement_trend_desc' | translate }}</p>
                     </div>
                     <i class="pi pi-chart-line text-blue-500"></i>
                 </div>
@@ -113,8 +113,8 @@
             <div class="glass-card border-round-2xl p-4 h-full">
                 <div class="flex align-items-center justify-content-between mb-4">
                     <div>
-                        <h3 class="m-0 text-900 font-bold">Kategori Bazlı Değer</h3>
-                        <p class="m-0 text-xs text-secondary opacity-70 mt-1">Stok maliyet dağılımı</p>
+                        <h3 class="m-0 text-900 font-bold">{{ 'dashboard.category_value' | translate }}</h3>
+                        <p class="m-0 text-xs text-secondary opacity-70 mt-1">{{ 'dashboard.category_value_desc' | translate }}</p>
                     </div>
                     <i class="pi pi-chart-pie text-purple-500"></i>
                 </div>
@@ -126,8 +126,8 @@
                     } @else {
                         <div class="text-center">
                             <i class="pi pi-chart-pie text-4xl text-secondary mb-3 opacity-30"></i>
-                            <p class="m-0 text-secondary opacity-70">Henüz stok değeri oluşmadı.</p>
-                            <p class="m-0 text-xs text-secondary opacity-50 mt-1">Ürünlere stok girişi yapıldığında burada maliyet dağılımı görünecektir.</p>
+                            <p class="m-0 text-secondary opacity-70">{{ 'dashboard.no_value_data' | translate }}</p>
+                            <p class="m-0 text-xs text-secondary opacity-50 mt-1">{{ 'dashboard.no_value_desc' | translate }}</p>
                         </div>
                     }
                 </div>
@@ -144,9 +144,9 @@
                     <div class="p-4 border-bottom-1 border-soft flex align-items-center justify-content-between">
                         <div>
                             <h3 class="m-0 text-900 font-bold">{{ 'dashboard.recent_movements_title' | translate }}</h3>
-                            <p class="m-0 text-xs text-secondary opacity-70 mt-1">Son stok hareketleri</p>
+                            <p class="m-0 text-xs text-secondary opacity-70 mt-1">{{ 'dashboard.recent_movements_desc' | translate }}</p>
                         </div>
-                        <button pButton icon="pi pi-arrow-right" [routerLink]="['/movements']" label="Tümünü Gör" class="p-button-text p-button-sm"></button>
+                        <button pButton icon="pi pi-arrow-right" [routerLink]="['/movements']" [label]="'common.view_all' | translate" class="p-button-text p-button-sm"></button>
                     </div>
                     
                     @if (loading() && !stats()) {
@@ -168,7 +168,7 @@
                                 <tr class="stagger-item" [style.animation-delay]="i * 0.05 + 's'">
                                     <td class="font-bold text-900">{{ movement.product?.name }}</td>
                                     <td>
-                                        <p-tag [value]="movement.type === 0 ? 'Giriş' : 'Çıkış'" 
+                                        <p-tag [value]="movement.type === 0 ? ('common.in' | translate) : ('common.out' | translate)" 
                                                [severity]="movement.type === 0 ? 'success' : 'danger'"
                                                [icon]="movement.type === 0 ? 'pi pi-arrow-down-left' : 'pi pi-arrow-up-right'"
                                                [rounded]="true" styleClass="text-xs px-2"></p-tag>
@@ -187,10 +187,10 @@
                 <div class="glass-card border-round-2xl overflow-hidden">
                     <div class="p-4 border-bottom-1 border-soft flex align-items-center justify-content-between">
                         <div>
-                            <h3 class="m-0 text-900 font-bold">Son Stok Sayımları</h3>
-                            <p class="m-0 text-xs text-secondary opacity-70 mt-1">Sistem ve fiziksel stok karşılaştırmaları</p>
+                            <h3 class="m-0 text-900 font-bold">{{ 'dashboard.recent_audits' | translate }}</h3>
+                            <p class="m-0 text-xs text-secondary opacity-70 mt-1">{{ 'dashboard.recent_audits_desc' | translate }}</p>
                         </div>
-                        <button pButton icon="pi pi-arrow-right" [routerLink]="['/inventory-audit']" label="Tümünü Gör" class="p-button-text p-button-sm"></button>
+                        <button pButton icon="pi pi-arrow-right" [routerLink]="['/inventory-audit']" [label]="'common.view_all' | translate" class="p-button-text p-button-sm"></button>
                     </div>
                     
                     @if (loading() && !stats()) {
@@ -201,16 +201,16 @@
                         <p-table [value]="stats()?.recentInventoryCounts || []" styleClass="modern-table" [responsiveLayout]="'scroll'">
                             <ng-template pTemplate="header">
                                 <tr>
-                                    <th>Tarih</th>
-                                    <th>Açıklama</th>
-                                    <th>Sorumlu</th>
-                                    <th>Durum</th>
+                                    <th>{{ 'common.date' | translate }}</th>
+                                    <th>{{ 'movements.description' | translate }}</th>
+                                    <th>{{ 'movements.responsible_header' | translate }}</th>
+                                    <th>{{ 'products.status' | translate }}</th>
                                 </tr>
                             </ng-template>
                             <ng-template pTemplate="body" let-count>
                                 <tr>
                                     <td class="font-bold text-900 text-sm">{{ count.date | date:'dd.MM.yyyy HH:mm' }}</td>
-                                    <td class="text-secondary">{{ count.description || 'Not yok' }}</td>
+                                    <td class="text-secondary">{{ count.description || ('dashboard.no_notes' | translate) }}</td>
                                     <td>
                                         <div class="flex align-items-center gap-2">
                                             <div class="w-1.5rem h-1.5rem border-circle bg-blue-50 text-blue-600 flex align-items-center justify-content-center text-xs">
@@ -220,7 +220,7 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <p-tag value="Tamamlandı" severity="success" [rounded]="true" styleClass="text-xs"></p-tag>
+                                        <p-tag [value]="'dashboard.completed' | translate" severity="success" [rounded]="true" styleClass="text-xs"></p-tag>
                                     </td>
                                 </tr>
                             </ng-template>
@@ -236,7 +236,7 @@
                 <div class="p-4 border-bottom-1 border-soft flex align-items-center justify-content-between bg-red-50">
                     <div>
                         <h3 class="m-0 text-red-900 font-bold">{{ 'dashboard.critical_products' | translate }}</h3>
-                        <p class="m-0 text-xs text-red-700 opacity-70 mt-1">Hemen müdahale gerekebilir</p>
+                        <p class="m-0 text-xs text-red-700 opacity-70 mt-1">{{ 'dashboard.critical_desc_alt' | translate }}</p>
                     </div>
                     <i class="pi pi-bell text-red-500 animate-pulse"></i>
                 </div>
@@ -254,7 +254,7 @@
                                     </div>
                                     <div class="flex flex-column">
                                         <span class="text-sm font-bold text-900">{{ product.name }}</span>
-                                        <span class="text-xs text-secondary">{{ product.category?.name }}</span>
+                                        <span class="text-xs text-secondary">{{ product.category?.name | translate }}</span>
                                     </div>
                                 </div>
                                 <div class="text-right">
@@ -267,8 +267,8 @@
                                 <div class="w-4rem h-4rem border-circle bg-green-50 text-green-500 flex align-items-center justify-content-center mx-auto mb-3">
                                     <i class="pi pi-check-circle text-2xl"></i>
                                 </div>
-                                <p class="m-0 font-bold text-900">Stoklar Güvende</p>
-                                <p class="m-0 text-xs text-secondary opacity-70 mt-1">Tüm ürünler güvenli seviyede.</p>
+                                <p class="m-0 font-bold text-900">{{ 'dashboard.stocks_safe' | translate }}</p>
+                                <p class="m-0 text-xs text-secondary opacity-70 mt-1">{{ 'dashboard.all_safe' | translate }}</p>
                             </div>
                         }
                     }

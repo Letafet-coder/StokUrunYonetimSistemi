@@ -10,10 +10,11 @@ public enum InvoiceType
 
 public enum InvoiceStatus
 {
-    Draft,    // Taslak
-    Pending,  // Beklemede
-    Paid,     // Ödendi
-    Cancelled // İptal
+    Draft,         // Taslak
+    NotInvoiced,   // Faturalanmadı
+    Invoiced,      // Faturalandı
+    Paid,          // Ödendi
+    Cancelled      // İptal
 }
 
 public class Invoice
@@ -36,6 +37,8 @@ public class Invoice
     public decimal TotalAmount { get; set; }
     
     public string? Notes { get; set; }
+    
+    public string? DocumentUrl { get; set; }
     
     public List<InvoiceItem> Items { get; set; } = new();
 }

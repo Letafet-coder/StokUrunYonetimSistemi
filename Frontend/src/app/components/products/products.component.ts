@@ -61,6 +61,9 @@ export class ProductsComponent implements OnInit {
   ];
   stockMovement: StockMovement = { productId: 0, quantity: 1, type: MovementType.In, date: '', toLocationId: 1 };
   selectedProduct: Product | null = null;
+  
+  displayDistributionDialog: boolean = false;
+  selectedProductDistribution: Product | null = null;
 
   authService = inject(AuthService);
   langService = inject(LanguageService);
@@ -247,6 +250,11 @@ export class ProductsComponent implements OnInit {
         this.messageService.add({ severity: 'error', summary: 'Hata', detail: 'Bir hata oluştu: ' + (err.error || err.message) });
       }
     });
+  }
+
+  viewDistribution(prod: Product) {
+    this.selectedProductDistribution = prod;
+    this.displayDistributionDialog = true;
   }
 
   getStockSeverity(product: Product) {

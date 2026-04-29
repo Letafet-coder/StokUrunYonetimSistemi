@@ -7,7 +7,8 @@ export enum InvoiceType {
 
 export enum InvoiceStatus {
     Draft = 'Draft',
-    Pending = 'Pending',
+    NotInvoiced = 'NotInvoiced',
+    Invoiced = 'Invoiced',
     Paid = 'Paid',
     Cancelled = 'Cancelled'
 }
@@ -21,6 +22,7 @@ export interface Invoice {
     status: InvoiceStatus;
     totalAmount: number;
     notes?: string;
+    documentUrl?: string;
     items: InvoiceItem[];
 }
 

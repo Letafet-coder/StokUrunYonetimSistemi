@@ -80,4 +80,30 @@ public class InvoicesController : ControllerBase
 
         return NoContent();
     }
+
+    [HttpPost("{id}/upload")]
+    public async Task<IActionResult> UploadDocument(int id, IFormFile file)
+    {
+        var invoice = await _unitOfWork.Invoices.GetByIdAsync(id);
+        if (invoice == null) return NotFound();
+
+        if (file == null || file.Length == 0) return BadRequest("Dosya seçilmedi.");
+
+        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "invoices");
+        if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+
+        var fileName = $"{id}_{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+        var filePath = Path.Combine(uploadsFolder, fileName);
+
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        invoice.DocumentUrl = $"/uploads/invoices/{fileName}";
+        _unitOfWork.Invoices.Update(invoice);
+        await _unitOfWork.CompleteAsync();
+
+        return Ok(new { url = invoice.DocumentUrl });
+    }
 }

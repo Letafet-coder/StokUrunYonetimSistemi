@@ -17,6 +17,9 @@ export class ApiService {
   getCategories(): Observable<Category[]> {
     return this.http.get<Category[]>(`${this.apiUrl}/categories`);
   }
+  getWarehouses(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/warehouses`);
+  }
   postCategory(category: Category): Observable<Category> {
     return this.http.post<Category>(`${this.apiUrl}/categories`, category);
   }

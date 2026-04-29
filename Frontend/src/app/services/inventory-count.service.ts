@@ -18,8 +18,9 @@ export class InventoryCountService {
     return this.http.get<InventoryCount>(`${this.apiUrl}/${id}`);
   }
 
-  getProductsForCount(): Observable<ProductForCount[]> {
-    return this.http.get<ProductForCount[]>(`${this.apiUrl}/products`);
+  getProductsForCount(warehouseId?: number): Observable<ProductForCount[]> {
+    const url = warehouseId ? `${this.apiUrl}/products?warehouseId=${warehouseId}` : `${this.apiUrl}/products`;
+    return this.http.get<ProductForCount[]>(url);
   }
 
   createCount(count: InventoryCount): Observable<InventoryCount> {

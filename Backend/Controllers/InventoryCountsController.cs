@@ -46,15 +46,19 @@ public class InventoryCountsController : ControllerBase
     }
 
     [HttpGet("products")]
-    public async Task<ActionResult<IEnumerable<object>>> GetProductsForCount()
+    public async Task<ActionResult<IEnumerable<object>>> GetProductsForCount([FromQuery] int? warehouseId = null)
     {
-        var products = await _context.Products
+        var query = _context.Products.AsQueryable();
+
+        var products = await query
             .Select(p => new
             {
                 p.Id,
                 p.Name,
                 p.Sku,
-                p.StockQuantity,
+                StockQuantity = warehouseId.HasValue 
+                    ? p.ProductStocks.Where(ps => ps.WarehouseId == warehouseId).Sum(ps => ps.Quantity)
+                    : p.ProductStocks.Sum(ps => ps.Quantity),
                 p.Unit,
                 CategoryName = p.Category != null ? p.Category.Name : "N/A"
             })
@@ -88,15 +92,16 @@ public class InventoryCountsController : ControllerBase
                         Quantity = Math.Abs(item.Difference),
                         Type = MovementType.Adjustment,
                         Date = DateTime.UtcNow,
-                        ToLocationId = count.LocationId, // The audited location
+                        WarehouseId = count.WarehouseId,
+                        ToLocationId = count.LocationId, 
                         Description = $"Envanter Sayımı Sonucu ({count.Description ?? "Genel Sayım"})",
                         DocumentNumber = $"COUNT-{DateTime.UtcNow:yyyyMMdd}"
                     };
 
                     await _unitOfWork.StockMovements.AddAsync(movement);
                     
-                    // Update specific location stock
-                    await UpdateLocationStock(product.Id, count.LocationId, item.CountedQuantity);
+                    // Update stock
+                    await UpdateStock(product.Id, count.WarehouseId, count.LocationId, item.CountedQuantity);
                 }
             }
         }
@@ -107,14 +112,23 @@ public class InventoryCountsController : ControllerBase
         return CreatedAtAction(nameof(GetCount), new { id = count.Id }, count);
     }
 
-    private async Task UpdateLocationStock(int productId, int locationId, int newQuantity)
+    private async Task UpdateStock(int productId, int? warehouseId, int? locationId, int newQuantity)
     {
+        if (!warehouseId.HasValue && !locationId.HasValue) return;
+
         var stock = await _context.ProductStocks
-            .FirstOrDefaultAsync(ps => ps.ProductId == productId && ps.LocationId == locationId);
+            .FirstOrDefaultAsync(ps => ps.ProductId == productId && 
+                                     (locationId.HasValue ? ps.LocationId == locationId : ps.WarehouseId == warehouseId));
 
         if (stock == null)
         {
-            stock = new ProductStock { ProductId = productId, LocationId = locationId, Quantity = newQuantity };
+            stock = new ProductStock 
+            { 
+                ProductId = productId, 
+                WarehouseId = warehouseId ?? 0, 
+                LocationId = locationId, 
+                Quantity = newQuantity 
+            };
             await _context.ProductStocks.AddAsync(stock);
         }
         else

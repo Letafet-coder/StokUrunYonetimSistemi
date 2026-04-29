@@ -7,6 +7,7 @@ import { ButtonModule } from 'primeng/button';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { AuthService } from '../../services/auth.service';
+import { LanguageService } from '../../services/language.service';
 import { User } from '../../models/user.model';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 
@@ -163,16 +164,16 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
                     
                     <div class="flex align-items-center justify-content-between p-4 border-round-xl bg-surface-50 border-1 border-soft">
                         <div class="flex flex-column gap-1">
-                            <span class="font-bold text-900">E-posta Bildirimleri</span>
-                            <span class="text-sm text-secondary opacity-70">Stok hareketleri ve onaylar hakkında mail al.</span>
+                            <span class="font-bold text-900">{{ 'profile.email_notifications' | translate }}</span>
+                            <span class="text-sm text-secondary opacity-70">{{ 'profile.email_notif_desc' | translate }}</span>
                         </div>
                         <i class="pi pi-check-circle text-2xl text-primary"></i>
                     </div>
 
                     <div class="flex align-items-center justify-content-between p-4 border-round-xl bg-surface-50 border-1 border-soft">
                         <div class="flex flex-column gap-1">
-                            <span class="font-bold text-900">Tarayıcı Bildirimleri</span>
-                            <span class="text-sm text-secondary opacity-70">Sistem uyarılarını anlık olarak göster.</span>
+                            <span class="font-bold text-900">{{ 'profile.browser_notifications' | translate }}</span>
+                            <span class="text-sm text-secondary opacity-70">{{ 'profile.browser_notif_desc' | translate }}</span>
                         </div>
                         <i class="pi pi-circle text-2xl text-dim"></i>
                     </div>
@@ -290,6 +291,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 export class ProfileComponent implements OnInit {
   private authService = inject(AuthService);
   private messageService = inject(MessageService);
+  langService = inject(LanguageService);
   
   user: User | null = null;
   loading = false;
@@ -334,16 +336,16 @@ export class ProfileComponent implements OnInit {
       next: () => {
         this.messageService.add({ 
             severity: 'success', 
-            summary: 'Başarılı', 
-            detail: 'Profil bilgileriniz güncellendi.' 
+            summary: this.langService.translate('common.success'), 
+            detail: this.langService.translate('profile.update_success') 
         });
         this.loading = false;
       },
       error: () => {
         this.messageService.add({ 
             severity: 'error', 
-            summary: 'Hata', 
-            detail: 'Profil güncellenirken bir hata oluştu.' 
+            summary: this.langService.translate('common.error'), 
+            detail: this.langService.translate('profile.update_error') 
         });
         this.loading = false;
       }
@@ -356,14 +358,14 @@ export class ProfileComponent implements OnInit {
     this.loading = true;
     this.authService.changePassword(this.oldPassword, this.newPassword).subscribe({
       next: () => {
-        this.messageService.add({ severity: 'success', summary: 'Başarılı', detail: 'Şifreniz başarıyla değiştirildi.' });
+        this.messageService.add({ severity: 'success', summary: this.langService.translate('common.success'), detail: this.langService.translate('profile.password_success') });
         this.oldPassword = '';
         this.newPassword = '';
         this.confirmPassword = '';
         this.loading = false;
       },
       error: (err) => {
-        this.messageService.add({ severity: 'error', summary: 'Hata', detail: err.error || 'Şifre değiştirilemedi.' });
+        this.messageService.add({ severity: 'error', summary: this.langService.translate('common.error'), detail: err.error || this.langService.translate('profile.password_error') });
         this.loading = false;
       }
     });

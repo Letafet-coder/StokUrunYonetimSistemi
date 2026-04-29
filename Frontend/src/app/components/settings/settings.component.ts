@@ -53,7 +53,7 @@ import { ConfirmationService } from 'primeng/api';
                       <div class="w-2rem h-2rem flex align-items-center justify-content-center border-round-md mr-2 icon-bg">
                         <i class="pi pi-palette"></i>
                       </div>
-                      <span>Görünüm & Tema</span>
+                      <span>{{ 'settings.appearance_tab' | translate }}</span>
                   </button>
                   <button 
                     class="settings-nav-btn" 
@@ -62,7 +62,7 @@ import { ConfirmationService } from 'primeng/api';
                       <div class="w-2rem h-2rem flex align-items-center justify-content-center border-round-md mr-2 icon-bg">
                         <i class="pi pi-globe"></i>
                       </div>
-                      <span>Dil Seçenekleri</span>
+                      <span>{{ 'settings.language_tab' | translate }}</span>
                   </button>
                   <button 
                     class="settings-nav-btn" 
@@ -71,7 +71,7 @@ import { ConfirmationService } from 'primeng/api';
                       <div class="w-2rem h-2rem flex align-items-center justify-content-center border-round-md mr-2 icon-bg">
                         <i class="pi pi-shield"></i>
                       </div>
-                      <span>Güvenlik</span>
+                      <span>{{ 'settings.security_tab' | translate }}</span>
                   </button>
                   <button 
                     class="settings-nav-btn" 
@@ -80,7 +80,7 @@ import { ConfirmationService } from 'primeng/api';
                       <div class="w-2rem h-2rem flex align-items-center justify-content-center border-round-md mr-2 icon-bg">
                         <i class="pi pi-database"></i>
                       </div>
-                      <span>Veri Yönetimi</span>
+                      <span>{{ 'settings.data_tab' | translate }}</span>
                   </button>
               </div>
           </div>
@@ -92,7 +92,7 @@ import { ConfirmationService } from 'primeng/api';
               <!-- Appearance Section -->
               @if (activeTab() === 'appearance') {
                 <section class="fadein">
-                  <h3 class="section-title mb-5">Görünüm Ayarları</h3>
+                  <h3 class="section-title mb-5">{{ 'settings.appearance_settings' | translate }}</h3>
                   
                   <div class="settings-card mb-4">
                     <div class="flex align-items-center justify-content-between">
@@ -134,7 +134,7 @@ import { ConfirmationService } from 'primeng/api';
                           </div>
                         }
                         <div class="flex align-items-center gap-2 ml-auto custom-color-picker">
-                          <span class="text-xs font-bold text-secondary uppercase">Özel Renk:</span>
+                          <span class="text-xs font-bold text-secondary uppercase">{{ 'settings.custom_color' | translate }}</span>
                           <p-colorPicker [ngModel]="themeService.primaryColor()" (ngModelChange)="themeService.setPrimaryColor($event)"></p-colorPicker>
                         </div>
                       </div>
@@ -146,7 +146,7 @@ import { ConfirmationService } from 'primeng/api';
               <!-- Localization Section -->
               @if (activeTab() === 'language') {
                 <section class="fadein">
-                  <h3 class="section-title mb-5">Dil & Bölge</h3>
+                  <h3 class="section-title mb-5">{{ 'settings.lang_region' | translate }}</h3>
                   
                   <div class="settings-card">
                     <div class="flex align-items-center justify-content-between">
@@ -173,23 +173,27 @@ import { ConfirmationService } from 'primeng/api';
               <!-- Security Section -->
               @if (activeTab() === 'security') {
                 <section class="fadein">
-                  <h3 class="section-title mb-5">Güvenlik & Şifre</h3>
+                  <h3 class="section-title mb-5">{{ 'settings.security_pass' | translate }}</h3>
                   
                   <div class="settings-card flex flex-column gap-5">
                     <div class="field w-full m-0">
                       <label class="block text-900 font-bold mb-2 flex align-items-center gap-2">
-                        <i class="pi pi-key text-primary"></i> Mevcut Şifre
+                        <i class="pi pi-key text-primary"></i> {{ 'profile.current_password' | translate }}
                       </label>
                       <p-password [(ngModel)]="oldPassword" [toggleMask]="true" [feedback]="false" styleClass="w-full" inputStyleClass="w-full modern-input"></p-password>
                     </div>
                     <div class="field w-full m-0">
                       <label class="block text-900 font-bold mb-2 flex align-items-center gap-2">
-                        <i class="pi pi-lock text-primary"></i> Yeni Şifre
+                        <i class="pi pi-lock text-primary"></i> {{ 'profile.new_password' | translate }}
                       </label>
-                      <p-password [(ngModel)]="newPassword" [toggleMask]="true" styleClass="w-full" inputStyleClass="w-full modern-input" promptLabel="Şifre Gücü" weakLabel="Zayıf" mediumLabel="Orta" strongLabel="Güçlü"></p-password>
+                      <p-password [(ngModel)]="newPassword" [toggleMask]="true" styleClass="w-full" inputStyleClass="w-full modern-input" 
+                                 [promptLabel]="'settings.password_strength' | translate" 
+                                 [weakLabel]="'settings.weak' | translate" 
+                                 [mediumLabel]="'settings.medium' | translate" 
+                                 [strongLabel]="'settings.strong' | translate"></p-password>
                     </div>
                     <p-button 
-                      label="Şifreyi Güncelle" 
+                      [label]="'settings.update_password' | translate" 
                       icon="pi pi-check-circle" 
                       styleClass="w-fit modern-action-btn"
                       [loading]="loading"
@@ -201,7 +205,7 @@ import { ConfirmationService } from 'primeng/api';
               <!-- Data Management Section -->
               @if (activeTab() === 'data') {
                 <section class="fadein">
-                  <h3 class="section-title mb-5">Veri & Yedekleme</h3>
+                  <h3 class="section-title mb-5">{{ 'settings.data_backup' | translate }}</h3>
                   
                   <div class="flex flex-column gap-4">
                     <div class="settings-card hover-lift">
@@ -211,11 +215,11 @@ import { ConfirmationService } from 'primeng/api';
                             <i class="pi pi-file-excel text-xl"></i>
                           </div>
                           <div class="flex flex-column">
-                            <span class="font-bold text-lg text-900">Verileri Dışa Aktar</span>
-                            <span class="text-sm text-secondary opacity-70">Tüm ürün ve stok verilerini Excel formatında indir</span>
+                            <span class="font-bold text-lg text-900">{{ 'settings.export_data' | translate }}</span>
+                            <span class="text-sm text-secondary opacity-70">{{ 'settings.export_desc' | translate }}</span>
                           </div>
                         </div>
-                        <button pButton icon="pi pi-download" label="İndir (.xlsx)" class="p-button-success p-button-text font-bold" (click)="onExport()"></button>
+                        <button pButton icon="pi pi-download" [label]="'settings.download_xlsx' | translate" class="p-button-success p-button-text font-bold" (click)="onExport()"></button>
                       </div>
                     </div>
 
@@ -226,11 +230,11 @@ import { ConfirmationService } from 'primeng/api';
                             <i class="pi pi-user-minus text-xl"></i>
                           </div>
                           <div class="flex flex-column">
-                            <span class="font-bold text-lg text-red-600">Hesabı Dondur</span>
-                            <span class="text-sm text-secondary opacity-70">Sistem erişiminizi geçici olarak kapatın</span>
+                            <span class="font-bold text-lg text-red-600">{{ 'settings.freeze_account' | translate }}</span>
+                            <span class="text-sm text-secondary opacity-70">{{ 'settings.freeze_desc' | translate }}</span>
                           </div>
                         </div>
-                        <button pButton icon="pi pi-trash" label="İşlemi Başlat" class="p-button-danger p-button-text font-bold" (click)="onFreezeAccount()"></button>
+                        <button pButton icon="pi pi-trash" [label]="'settings.start_process' | translate" class="p-button-danger p-button-text font-bold" (click)="onFreezeAccount()"></button>
                       </div>
                     </div>
                   </div>
@@ -243,7 +247,7 @@ import { ConfirmationService } from 'primeng/api';
                       <i class="pi pi-cloud-upload text-2xl"></i>
                   </div>
                   <div class="flex-1">
-                      <p class="m-0 text-lg font-bold text-white">Bulut Eşitleme Aktif</p>
+                      <p class="m-0 text-lg font-bold text-white">{{ 'settings.cloud_sync' | translate }}</p>
                       <p class="m-0 text-sm text-white-alpha-80">{{ 'settings.save_info' | translate }}</p>
                   </div>
               </div>
@@ -440,26 +444,26 @@ export class SettingsComponent {
 
   onUpdatePassword() {
     if (!this.oldPassword || !this.newPassword) {
-      this.messageService.add({ severity: 'warn', summary: 'Uyarı', detail: 'Lütfen tüm alanları doldurun.' });
+      this.messageService.add({ severity: 'warn', summary: this.langService.translate('common.error'), detail: 'Lütfen tüm alanları doldurun.' });
       return;
     }
 
     if (this.newPassword.length < 6) {
-      this.messageService.add({ severity: 'warn', summary: 'Uyarı', detail: 'Yeni şifre en az 6 karakter olmalıdır.' });
+      this.messageService.add({ severity: 'warn', summary: this.langService.translate('common.error'), detail: 'Yeni şifre en az 6 karakter olmalıdır.' });
       return;
     }
 
     this.loading = true;
     this.authService.changePassword(this.oldPassword, this.newPassword).subscribe({
       next: () => {
-        this.messageService.add({ severity: 'success', summary: 'Başarılı', detail: 'Şifreniz başarıyla güncellendi.' });
+        this.messageService.add({ severity: 'success', summary: this.langService.translate('common.success'), detail: this.langService.translate('settings.password_success') });
         this.oldPassword = '';
         this.newPassword = '';
         this.loading = false;
       },
       error: (err) => {
-        const errorMsg = typeof err.error === 'string' ? err.error : (err.error?.message || 'İşlem başarısız oldu.');
-        this.messageService.add({ severity: 'error', summary: 'Hata', detail: errorMsg });
+        const errorMsg = typeof err.error === 'string' ? err.error : (err.error?.message || this.langService.translate('common.error'));
+        this.messageService.add({ severity: 'error', summary: this.langService.translate('common.error'), detail: errorMsg });
         this.loading = false;
       }
     });
@@ -468,7 +472,7 @@ export class SettingsComponent {
   onExport() {
     console.log('DEBUG: onExport called');
     try {
-      this.messageService.add({ severity: 'info', summary: 'İşlem Başladı', detail: 'Excel dosyası hazırlanıyor...' });
+      this.messageService.add({ severity: 'info', summary: this.langService.translate('common.loading'), detail: this.langService.translate('settings.export_start') });
       this.reportsService.exportProducts().subscribe({
         next: (blob) => {
           console.log('DEBUG: Export success, blob size:', blob.size);
@@ -478,11 +482,11 @@ export class SettingsComponent {
           a.download = `Envanter_${new Date().toISOString().split('T')[0]}.xlsx`;
           a.click();
           window.URL.revokeObjectURL(url);
-          this.messageService.add({ severity: 'success', summary: 'Başarılı', detail: 'Dosya indirildi.' });
+          this.messageService.add({ severity: 'success', summary: this.langService.translate('common.success'), detail: this.langService.translate('settings.export_success') });
         },
         error: (err) => {
           console.error('DEBUG: Export failed', err);
-          this.messageService.add({ severity: 'error', summary: 'Hata', detail: 'Dosya indirilemedi.' });
+          this.messageService.add({ severity: 'error', summary: this.langService.translate('common.error'), detail: this.langService.translate('settings.export_error') });
         }
       });
     } catch (e) {
@@ -493,24 +497,24 @@ export class SettingsComponent {
   onFreezeAccount() {
     console.log('DEBUG: onFreezeAccount called');
     this.confirmationService.confirm({
-      message: 'Hesabınızı dondurmak istediğinizden emin misiniz? Bu işlemden sonra giriş yapabilmek için bir yöneticinin onay vermesi gerekecektir.',
-      header: 'Hesabı Dondur',
+      message: this.langService.translate('settings.confirm_freeze_msg'),
+      header: this.langService.translate('settings.confirm_freeze_title'),
       icon: 'pi pi-exclamation-triangle',
-      acceptLabel: 'Evet, Dondur',
-      rejectLabel: 'Vazgeç',
+      acceptLabel: this.langService.translate('common.yes'),
+      rejectLabel: this.langService.translate('common.no'),
       accept: () => {
         console.log('DEBUG: Account freeze accepted');
         this.authService.freezeAccount().subscribe({
           next: () => {
             console.log('DEBUG: Account freeze success');
-            this.messageService.add({ severity: 'success', summary: 'Başarılı', detail: 'Hesabınız donduruldu. Çıkış yapılıyor...' });
+            this.messageService.add({ severity: 'success', summary: this.langService.translate('common.success'), detail: this.langService.translate('settings.freeze_success') });
             setTimeout(() => {
               this.authService.logout();
             }, 2000);
           },
           error: (err) => {
             console.error('DEBUG: Account freeze failed', err);
-            this.messageService.add({ severity: 'error', summary: 'Hata', detail: 'İşlem gerçekleştirilemedi.' });
+            this.messageService.add({ severity: 'error', summary: this.langService.translate('common.error'), detail: this.langService.translate('common.error') });
           }
         });
       },

@@ -18,6 +18,8 @@ public class StockMovement
     public DateTime Date { get; set; } = DateTime.UtcNow;
     
     // New Multi-Location Fields
+    public int? WarehouseId { get; set; }
+    public Warehouse? Warehouse { get; set; }
     public int? FromLocationId { get; set; }
     public Location? FromLocation { get; set; }
     public int? ToLocationId { get; set; }

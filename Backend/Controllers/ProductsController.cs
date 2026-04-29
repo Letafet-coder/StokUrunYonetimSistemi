@@ -27,6 +27,9 @@ public class ProductsController : ControllerBase
         var products = await _context.Products
             .Include(p => p.Category)
             .Include(p => p.ProductStocks)
+                .ThenInclude(ps => ps.Warehouse)
+            .Include(p => p.ProductStocks)
+                .ThenInclude(ps => ps.Location)
             .ToListAsync();
         return Ok(products);
     }
@@ -37,6 +40,9 @@ public class ProductsController : ControllerBase
         var product = await _context.Products
             .Include(p => p.Category)
             .Include(p => p.ProductStocks)
+                .ThenInclude(ps => ps.Warehouse)
+            .Include(p => p.ProductStocks)
+                .ThenInclude(ps => ps.Location)
             .FirstOrDefaultAsync(p => p.Id == id);
             
         if (product == null) return NotFound();

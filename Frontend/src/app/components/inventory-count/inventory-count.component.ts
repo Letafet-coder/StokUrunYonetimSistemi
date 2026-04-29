@@ -20,6 +20,7 @@ import { LanguageService } from '../../services/language.service';
 import { AuthService } from '../../services/auth.service';
 import { InventoryCount, InventoryCountItem, ProductForCount } from '../../models/inventory-count.model';
 import { Category } from '../../models/category.model';
+import { Warehouse } from '../../models/warehouse.model';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
@@ -61,6 +62,8 @@ export class InventoryCountComponent implements OnInit {
   // New Audit State
   description: string = '';
   selectedCategoryId: number | null = null;
+  selectedWarehouseId: number | null = null;
+  warehouses: Warehouse[] = [];
   loading: boolean = false;
 
   // Services
@@ -76,6 +79,11 @@ export class InventoryCountComponent implements OnInit {
     this.updateViewOptions();
     this.loadHistory();
     this.loadCategories();
+    this.loadWarehouses();
+  }
+
+  loadWarehouses() {
+    this.apiService.getWarehouses().subscribe(data => this.warehouses = data);
   }
 
   updateViewOptions() {
@@ -105,8 +113,12 @@ export class InventoryCountComponent implements OnInit {
   }
 
   startNewAudit() {
+    if (!this.selectedWarehouseId) {
+        this.messageService.add({ severity: 'warn', summary: 'Uyarı', detail: 'Lütfen önce sayım yapılacak depoyu seçin.' });
+        return;
+    }
     this.loading = true;
-    this.auditService.getProductsForCount().subscribe({
+    this.auditService.getProductsForCount(this.selectedWarehouseId).subscribe({
       next: (data) => {
         this.products = data.map(p => ({
           ...p,
@@ -167,6 +179,7 @@ export class InventoryCountComponent implements OnInit {
       date: new Date(),
       description: this.description,
       status: 'Completed',
+      warehouseId: this.selectedWarehouseId || undefined,
       createdByUserId: 0, // Set by backend but TS needs it
       items: this.products.map(p => ({
         productId: p.id,
