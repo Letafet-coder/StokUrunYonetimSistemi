@@ -104,10 +104,10 @@ import { User } from '../../models/user.model';
                   <div class="glass-card p-4 border-round-xl h-full flex flex-column justify-content-between hover-lift">
                     <div class="flex flex-column gap-2 mb-4">
                       <div class="flex align-items-center justify-content-between">
-                        <span class="text-xs font-bold text-primary uppercase tracking-wider">{{ setting.group }}</span>
+                        <span class="text-xs font-bold text-primary uppercase tracking-wider">{{ getGroupLabel(setting.group) }}</span>
                         <span class="text-xs text-secondary">{{ setting.lastUpdated | date:'short' }}</span>
                       </div>
-                      <span class="font-bold text-900 text-lg">{{ setting.key }}</span>
+                      <span class="font-bold text-900 text-lg">{{ getSettingLabel(setting.key) }}</span>
                       <span class="text-sm text-secondary opacity-70">{{ setting.description }}</span>
                     </div>
                     
@@ -151,11 +151,11 @@ import { User } from '../../models/user.model';
                       </div>
                     </td>
                     <td>
-                      <p-tag [value]="log.action" [severity]="getActionSeverity(log.action)"></p-tag>
+                      <p-tag [value]="getActionLabel(log.action)" [severity]="getActionSeverity(log.action)"></p-tag>
                     </td>
                     <td>
                       <div class="flex flex-column">
-                        <span class="font-medium text-sm">{{ log.entityName }}</span>
+                        <span class="font-medium text-sm">{{ getEntityLabel(log.entityName) }}</span>
                         <span class="text-xs opacity-50">ID: {{ log.entityId }}</span>
                       </div>
                     </td>
@@ -291,9 +291,55 @@ export class SystemManagementComponent implements OnInit {
   }
 
   getLogDetail(log: AuditLog) {
-    if (log.newValues && !log.oldValues) return `Yeni: ${log.newValues}`;
-    if (log.oldValues && log.newValues) return `${log.oldValues} -> ${log.newValues}`;
-    if (log.oldValues) return `Eski: ${log.oldValues}`;
-    return log.action;
+    const oldVal = log.oldValues === 'true' ? 'Aktif' : log.oldValues === 'false' ? 'Pasif' : log.oldValues;
+    const newVal = log.newValues === 'true' ? 'Aktif' : log.newValues === 'false' ? 'Pasif' : log.newValues;
+
+    if (newVal && !oldVal) return `Yeni: ${newVal}`;
+    if (oldVal && newVal) return `${oldVal} -> ${newVal}`;
+    if (oldVal) return `Eski: ${oldVal}`;
+    return this.getActionLabel(log.action);
+  }
+
+  getGroupLabel(group: string) {
+    const labels: any = {
+      'Security': 'Güvenlik',
+      'System': 'Sistem',
+      'General': 'Genel'
+    };
+    return labels[group] || group;
+  }
+
+  getSettingLabel(key: string) {
+    const labels: any = {
+      'AllowRegistration': 'Yeni Kayıt İzni',
+      'MaintenanceMode': 'Bakım Modu',
+      'SiteName': 'Uygulama Adı'
+    };
+    return labels[key] || key;
+  }
+
+  getActionLabel(action: string) {
+    const labels: any = {
+      'Create': 'Oluşturma',
+      'Update': 'Güncelleme',
+      'Delete': 'Silme',
+      'Login': 'Giriş',
+      'Approve': 'Onay',
+      'Reject': 'Red'
+    };
+    return labels[action] || action;
+  }
+
+  getEntityLabel(entity: string) {
+    const labels: any = {
+      'SystemSettings': 'Sistem Ayarı',
+      'User': 'Kullanıcı',
+      'Product': 'Ürün',
+      'Category': 'Kategori',
+      'Warehouse': 'Depo',
+      'Location': 'Konum',
+      'StockMovement': 'Stok Hareketi'
+    };
+    return labels[entity] || entity;
   }
 }

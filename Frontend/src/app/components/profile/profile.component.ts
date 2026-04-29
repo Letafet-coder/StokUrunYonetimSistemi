@@ -21,7 +21,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
         
         <div class="p-4 md:p-6 border-bottom-1 border-soft">
             <h1 class="text-3xl font-bold m-0 text-900 tracking-tight">{{ 'nav.profile' | translate }}</h1>
-            <p class="text-secondary m-0 mt-1 opacity-70">Hesap ayarlarınızı ve kişisel bilgilerinizi buradan yönetin.</p>
+            <p class="text-secondary m-0 mt-1 opacity-70">{{ 'profile.subtitle' | translate }}</p>
         </div>
 
         @if (user) {
@@ -62,10 +62,10 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
                       <i class="pi pi-user mr-2"></i> {{ 'nav.profile' | translate }}
                   </button>
                   <button class="profile-side-btn" [class.active]="activeTab === 'security'" (click)="activeTab = 'security'">
-                      <i class="pi pi-lock mr-2"></i> Güvenlik & Şifre
+                      <i class="pi pi-lock mr-2"></i> {{ 'profile.security_tab' | translate }}
                   </button>
                   <button class="profile-side-btn" [class.active]="activeTab === 'notifications'" (click)="activeTab = 'notifications'">
-                      <i class="pi pi-bell mr-2"></i> Bildirim Tercihleri
+                      <i class="pi pi-bell mr-2"></i> {{ 'profile.notifications_tab' | translate }}
                   </button>
               </div>
             </div>
@@ -76,12 +76,12 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
                 <div class="grid row-gap-5">
                   <div class="col-12">
                       <h3 class="text-lg font-bold text-900 m-0 mb-4 flex align-items-center gap-2">
-                          <i class="pi pi-info-circle text-primary"></i> Genel Bilgiler
+                          <i class="pi pi-info-circle text-primary"></i> {{ 'profile.general_info' | translate }}
                       </h3>
                   </div>
 
                   <div class="col-12 md:col-6">
-                    <label class="label-modern mb-2 block">Kullanıcı Adı</label>
+                    <label class="label-modern mb-2 block">{{ 'users.username' | translate }}</label>
                     <div class="input-modern-wrapper disabled">
                         <i class="pi pi-at"></i>
                         <input pInputText [value]="user.username" disabled class="w-full" />
@@ -89,7 +89,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
                   </div>
 
                   <div class="col-12 md:col-6">
-                    <label class="label-modern mb-2 block">Tam İsim</label>
+                    <label class="label-modern mb-2 block">{{ 'profile.full_name' | translate }}</label>
                     <div class="input-modern-wrapper">
                         <i class="pi pi-user"></i>
                         <input pInputText [(ngModel)]="user.fullName" class="w-full" placeholder="Ad Soyad giriniz" />
@@ -97,7 +97,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
                   </div>
 
                   <div class="col-12">
-                    <label class="label-modern mb-2 block">E-posta Adresi</label>
+                    <label class="label-modern mb-2 block">{{ 'users.email' | translate }}</label>
                     <div class="input-modern-wrapper">
                         <i class="pi pi-envelope"></i>
                         <input pInputText [(ngModel)]="user.email" class="w-full" placeholder="e-posta@adresiniz.com" />
@@ -111,8 +111,8 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
                                   <i class="pi pi-sync"></i>
                               </div>
                               <div class="flex flex-column">
-                                  <span class="font-bold text-900">Değişiklikleri Uygula</span>
-                                  <span class="text-sm text-secondary opacity-70">Bilgileriniz tüm cihazlarda anında güncellenir.</span>
+                                  <span class="font-bold text-900">{{ 'profile.apply_changes' | translate }}</span>
+                                  <span class="text-sm text-secondary opacity-70">{{ 'profile.apply_desc' | translate }}</span>
                               </div>
                           </div>
                           <p-button [label]="'common.save' | translate" icon="pi pi-check" (onClick)="save()" [loading]="loading" styleClass="p-button-raised bg-primary border-none px-6 py-3 shadow-premium font-bold"></p-button>
@@ -123,12 +123,12 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
                 <div class="grid row-gap-5">
                     <div class="col-12">
                         <h3 class="text-lg font-bold text-900 m-0 mb-4 flex align-items-center gap-2">
-                            <i class="pi pi-shield text-primary"></i> Güvenlik Ayarları
+                            <i class="pi pi-shield text-primary"></i> {{ 'profile.security_settings' | translate }}
                         </h3>
                     </div>
 
                     <div class="col-12">
-                        <label class="label-modern mb-2 block">Mevcut Şifre</label>
+                        <label class="label-modern mb-2 block">{{ 'profile.current_password' | translate }}</label>
                         <div class="input-modern-wrapper">
                             <i class="pi pi-lock"></i>
                             <input pInputText type="password" [(ngModel)]="oldPassword" class="w-full" placeholder="••••••••" />
@@ -136,7 +136,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
                     </div>
 
                     <div class="col-12 md:col-6">
-                        <label class="label-modern mb-2 block">Yeni Şifre</label>
+                        <label class="label-modern mb-2 block">{{ 'profile.new_password' | translate }}</label>
                         <div class="input-modern-wrapper">
                             <i class="pi pi-key"></i>
                             <input pInputText type="password" [(ngModel)]="newPassword" class="w-full" placeholder="••••••••" />
@@ -144,7 +144,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
                     </div>
 
                     <div class="col-12 md:col-6">
-                        <label class="label-modern mb-2 block">Yeni Şifre (Tekrar)</label>
+                        <label class="label-modern mb-2 block">{{ 'profile.confirm_password' | translate }}</label>
                         <div class="input-modern-wrapper">
                             <i class="pi pi-key"></i>
                             <input pInputText type="password" [(ngModel)]="confirmPassword" class="w-full" placeholder="••••••••" />
@@ -152,13 +152,13 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
                     </div>
 
                     <div class="col-12 mt-4">
-                        <p-button label="Şifreyi Güncelle" icon="pi pi-lock" (onClick)="changePassword()" [loading]="loading" [disabled]="!oldPassword || !newPassword || newPassword !== confirmPassword" styleClass="w-full sm:w-auto bg-primary border-none px-6 py-3 shadow-premium font-bold"></p-button>
+                        <p-button [label]="'profile.update_password' | translate" icon="pi pi-lock" (onClick)="changePassword()" [loading]="loading" [disabled]="!oldPassword || !newPassword || newPassword !== confirmPassword" styleClass="w-full sm:w-auto bg-primary border-none px-6 py-3 shadow-premium font-bold"></p-button>
                     </div>
                 </div>
               } @else if (activeTab === 'notifications') {
                 <div class="flex flex-column gap-5">
                     <h3 class="text-lg font-bold text-900 m-0 mb-2 flex align-items-center gap-2">
-                        <i class="pi pi-bell text-primary"></i> Bildirim Tercihleri
+                        <i class="pi pi-bell text-primary"></i> {{ 'profile.notifications_tab' | translate }}
                     </h3>
                     
                     <div class="flex align-items-center justify-content-between p-4 border-round-xl bg-surface-50 border-1 border-soft">
@@ -179,7 +179,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 
                     <div class="p-4 bg-blue-50 text-blue-700 border-round-xl flex gap-3 align-items-start">
                         <i class="pi pi-info-circle text-xl mt-1"></i>
-                        <p class="m-0 text-sm leading-relaxed">Bildirim ayarları şu an varsayılan değerlerdedir. İlerleyen güncellemelerde daha detaylı özelleştirme seçenekleri eklenecektir.</p>
+                        <p class="m-0 text-sm leading-relaxed">{{ 'profile.notif_desc' | translate }}</p>
                     </div>
                 </div>
               }

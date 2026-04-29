@@ -49,6 +49,37 @@ namespace Backend.Controllers
             return Ok(lotSerial);
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateLotSerial(int id, LotSerial lotSerial)
+        {
+            var existing = await _context.LotSerials.FindAsync(id);
+            if (existing == null) return NotFound();
+
+            // Check for duplicates if identifier or product changed
+            if (existing.Identifier != lotSerial.Identifier || existing.ProductId != lotSerial.ProductId)
+            {
+                var exists = await _context.LotSerials
+                    .AnyAsync(ls => ls.ProductId == lotSerial.ProductId && ls.Identifier == lotSerial.Identifier && ls.Id != id);
+                if (exists) return BadRequest("Bu tanımlayıcı bu ürün için zaten mevcut.");
+            }
+
+            existing.Identifier = lotSerial.Identifier;
+            existing.ExpirationDate = lotSerial.ExpirationDate;
+            existing.ProductId = lotSerial.ProductId;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        private bool LotSerialExists(int id) => _context.LotSerials.Any(e => e.Id == id);
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteLotSerial(int id)
         {

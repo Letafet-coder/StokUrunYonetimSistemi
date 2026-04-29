@@ -280,6 +280,159 @@ body {
     border-radius: 12px !important;
 }
 
-.custom-scrollbar::-webkit-scrollbar {
-    width: 4px;
+/* Animated Background Grid */
+.bg-grid-subtle {
+    background-size: 50px 50px;
+    background-image: 
+        linear-gradient(to right, var(--border-soft) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--border-soft) 1px, transparent 1px);
+    mask-image: radial-gradient(ellipse 80% 50% at 50% -10%, #000 0%, transparent 100%);
+    opacity: 0.15;
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1; /* Move forward */
+}
+
+/* Border Beam Effect (Compatibility Focus) */
+@keyframes rotate-beam {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.border-beam-container {
+    position: relative;
+    padding: 1px;
+    background: transparent;
+    z-index: 1;
+}
+
+.border-beam {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    z-index: -1; /* Behind the card content */
+    overflow: hidden;
+}
+
+.border-beam::after {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(
+        from 0deg,
+        transparent 0 48%,
+        var(--primary) 49% 51%,
+        transparent 52% 100%
+    );
+    animation: rotate-beam 6s linear infinite;
+}
+
+/* Floating Elements (Blobs) */
+@keyframes float {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    33% { transform: translate(30px, -50px) rotate(5deg); }
+    66% { transform: translate(-20px, 20px) rotate(-5deg); }
+}
+
+.floating-blob {
+    position: fixed;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+    filter: blur(80px);
+    border-radius: 50%;
+    z-index: 0;
+    animation: float 25s ease-in-out infinite;
+    pointer-events: none;
+    opacity: 0.25;
+}
+
+.blob-1 { top: -15%; left: -15%; animation-delay: 0s; }
+.blob-2 { bottom: -15%; right: -15%; animation-delay: -5s; background: radial-gradient(circle, rgba(99, 102, 241, 0.4) 0%, transparent 70%); }
+
+/* Reveal on Scroll & Stagger */
+@keyframes revealUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.reveal-up {
+    opacity: 0;
+    animation: revealUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.stagger-item {
+    opacity: 0;
+    animation: slideInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideInUp {
+    from { opacity: 0; transform: translateY(25px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Hover Shine Effect */
+.hover-shine {
+    position: relative;
+    overflow: hidden;
+}
+
+.hover-shine::after {
+    content: '';
+    position: absolute;
+    top: -100%;
+    left: -100%;
+    width: 300%;
+    height: 300%;
+    background: linear-gradient(
+        45deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.15) 50%,
+        transparent 100%
+    );
+    transition: all 0.8s;
+    transform: rotate(45deg);
+    pointer-events: none;
+}
+
+.hover-shine:hover::after {
+    left: 100%;
+    top: 100%;
+}
+
+/* Pulse Animation for Critical Badges */
+@keyframes pulse-red {
+    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+.pulse-critical {
+    animation: pulse-red 2s infinite;
+    border-radius: var(--radius-pill);
+}
+
+/* Premium Glassmorphism */
+.glass-card-premium {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+}
+
+:host-context(.my-app-dark) .glass-card-premium {
+    background: rgba(30, 41, 59, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Custom Selection */
+::selection {
+    background: var(--primary);
+    color: white;
 }

@@ -31,6 +31,10 @@ export class LotSerialService {
     return this.http.post<LotSerial>(this.apiUrl, data);
   }
 
+  update(id: number, data: LotSerial): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${id}`, data);
+  }
+
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }

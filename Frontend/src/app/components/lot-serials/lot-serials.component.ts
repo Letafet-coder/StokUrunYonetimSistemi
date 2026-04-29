@@ -70,22 +70,47 @@ export class LotSerialsComponent implements OnInit {
     this.displayDialog = true;
   }
 
+  editItem(item: LotSerial) {
+    this.item = { ...item };
+    if (this.item.expirationDate) {
+      this.item.expirationDate = new Date(this.item.expirationDate) as any;
+    }
+    this.displayDialog = true;
+  }
+
   save() {
     if (!this.item.identifier || !this.item.productId) {
       this.messageService.add({ severity: 'warn', summary: 'Eksik Bilgi', detail: 'Tanımlayıcı ve Ürün zorunludur' });
       return;
     }
 
-    this.lotService.create(this.item).subscribe({
-      next: () => {
-        this.messageService.add({ severity: 'success', summary: 'Başarılı', detail: 'Kaydedildi' });
-        this.displayDialog = false;
-        this.loadItems();
-      },
-      error: (err) => {
-        this.messageService.add({ severity: 'error', summary: 'Hata', detail: err.error || 'İşlem başarısız' });
-      }
-    });
+    const data = { ...this.item };
+    // Remove nested product object to avoid EF tracking errors
+    delete data.product;
+
+    if (data.id) {
+      this.lotService.update(data.id, data).subscribe({
+        next: () => {
+          this.messageService.add({ severity: 'success', summary: 'Başarılı', detail: 'Güncellendi' });
+          this.displayDialog = false;
+          this.loadItems();
+        },
+        error: (err) => {
+          this.messageService.add({ severity: 'error', summary: 'Hata', detail: err.error || 'Güncelleme başarısız' });
+        }
+      });
+    } else {
+      this.lotService.create(data).subscribe({
+        next: () => {
+          this.messageService.add({ severity: 'success', summary: 'Başarılı', detail: 'Kaydedildi' });
+          this.displayDialog = false;
+          this.loadItems();
+        },
+        error: (err) => {
+          this.messageService.add({ severity: 'error', summary: 'Hata', detail: err.error || 'İşlem başarısız' });
+        }
+      });
+    }
   }
 
   deleteItem(item: LotSerial) {

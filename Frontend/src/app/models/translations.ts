@@ -11,7 +11,7 @@ export const TRANSLATIONS = {
     'nav.profile': 'Profilim',
     'nav.reports': 'Raporlar',
     'nav.invoices': 'Fatura Takibi',
-    'nav.bulk_stock': 'Toplu Stok Ekle',
+    'nav.bulk_stock': 'Toplu Stok Girişi',
     'nav.system_management': 'Sistem Yönetimi',
     'nav.logout': 'Çıkış Yap',
     
@@ -24,7 +24,7 @@ export const TRANSLATIONS = {
     'header.no_notifications': 'Yeni bildirim yok',
     'header.low_stock_warning': '{name} ürünü kritik seviyenin altında!',
     'header.low_stock_detail': 'Mevcut: {stock} {unit}',
-    'header.lang_switch': 'Dil / Language',
+    'header.lang_switch': 'Dil Değiştir',
     'header.theme_toggle': 'Temayı Değiştir',
 
     // Dashboard
@@ -189,6 +189,8 @@ export const TRANSLATIONS = {
     'enterprise.manual_movement': 'Manuel Stok Hareketi',
     'enterprise.select_identifier': 'Lot/Seri Seçiniz',
     'enterprise.no_identifier_found': 'Bu ürün için Lot/Seri kaydı bulunamadı',
+    'enterprise.tracking_method_label': 'Ürün Takip Yöntemi',
+    'enterprise.lot_serial_no_label': 'Parti / Seri Numarası',
 
     // Movements Extended
     'movements.stock_in_label': 'Mal Girişi',
@@ -252,7 +254,7 @@ export const TRANSLATIONS = {
     'system.refresh_all': 'Tümünü Yenile',
     'system.pending_approvals': 'Kayıt Onayları',
     'system.config': 'Sistem Ayarları',
-    'system.audit_logs': 'Denetim Kayıtları (Audit)',
+    'system.audit_logs': 'Denetim Kayıtları',
     'system.no_pending': 'Onay bekleyen kullanıcı bulunmuyor.',
     'system.log_user': 'YAPAN',
     'system.log_action': 'İŞLEM',
@@ -262,7 +264,21 @@ export const TRANSLATIONS = {
     'common.reject': 'Reddet',
     'common.date': 'Tarih',
     'common.yes': 'Evet',
-    'common.no': 'Hayır'
+    'common.no': 'Hayır',
+    'profile.title': 'Profilim',
+    'profile.subtitle': 'Hesap ayarlarınızı ve kişisel bilgilerinizi buradan yönetin.',
+    'profile.security_tab': 'Güvenlik & Şifre',
+    'profile.notifications_tab': 'Bildirim Tercihleri',
+    'profile.general_info': 'Genel Bilgiler',
+    'profile.full_name': 'Tam İsim',
+    'profile.apply_changes': 'Değişiklikleri Uygula',
+    'profile.apply_desc': 'Bilgileriniz tüm cihazlarda anında güncellenir.',
+    'profile.security_settings': 'Güvenlik Ayarları',
+    'profile.current_password': 'Mevcut Şifre',
+    'profile.new_password': 'Yeni Şifre',
+    'profile.confirm_password': 'Yeni Şifre (Tekrar)',
+    'profile.update_password': 'Şifreyi Güncelle',
+    'profile.notif_desc': 'Bildirim ayarları şu an varsayılan değerlerdedir. İlerleyen güncellemelerde daha detaylı özelleştirme seçenekleri eklenecektir.'
   },
   en: {
     // Sidebar

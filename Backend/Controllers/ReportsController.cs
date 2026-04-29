@@ -13,7 +13,7 @@ using QuestPDF.Previewer;
 
 namespace Backend.Controllers;
 
-[Authorize(Roles = "SuperAdmin,Admin")]
+[Authorize(Roles = "SuperAdmin,Admin,User")]
 [ApiController]
 [Route("api/[controller]")]
 public class ReportsController : ControllerBase

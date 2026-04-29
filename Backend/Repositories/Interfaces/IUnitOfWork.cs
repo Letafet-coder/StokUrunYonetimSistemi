@@ -16,5 +16,6 @@ public interface IUnitOfWork : IDisposable
     IGenericRepository<Invoice> Invoices { get; }
     IGenericRepository<InvoiceItem> InvoiceItems { get; }
     IGenericRepository<LotSerial> LotSerials { get; }
+    IGenericRepository<SystemSetting> SystemSettings { get; }
     Task<int> CompleteAsync();
 }

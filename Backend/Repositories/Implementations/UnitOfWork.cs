@@ -19,6 +19,7 @@ public class UnitOfWork : IUnitOfWork
     private IGenericRepository<Invoice>? _invoices;
     private IGenericRepository<InvoiceItem>? _invoiceItems;
     private IGenericRepository<LotSerial>? _lotSerials;
+    private IGenericRepository<SystemSetting>? _systemSettings;
 
     public UnitOfWork(AppDbContext context)
     {
@@ -37,6 +38,7 @@ public class UnitOfWork : IUnitOfWork
     public IGenericRepository<Invoice> Invoices => _invoices ??= new GenericRepository<Invoice>(_context);
     public IGenericRepository<InvoiceItem> InvoiceItems => _invoiceItems ??= new GenericRepository<InvoiceItem>(_context);
     public IGenericRepository<LotSerial> LotSerials => _lotSerials ??= new GenericRepository<LotSerial>(_context);
+    public IGenericRepository<SystemSetting> SystemSettings => _systemSettings ??= new GenericRepository<SystemSetting>(_context);
 
     public async Task<int> CompleteAsync()
     {

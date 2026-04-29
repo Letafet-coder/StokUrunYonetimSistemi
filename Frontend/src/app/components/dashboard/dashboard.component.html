@@ -1,12 +1,16 @@
 <div class="p-4 md:p-6 fadein">
     <!-- Header -->
-    <div class="flex flex-column md:flex-row md:align-items-center justify-content-between mb-6 gap-3">
-        <div>
+    <div class="flex flex-column md:flex-row md:align-items-center justify-content-between mb-6 gap-3 reveal-up">
+        <div class="relative">
             <h1 class="text-3xl font-bold m-0 text-900 tracking-tight">{{ 'nav.dashboard' | translate }}</h1>
             <p class="text-secondary m-0 mt-1 opacity-70">{{ 'dashboard.recent_desc' | translate }}</p>
+            <!-- Corner Ribbon -->
+            <div class="absolute top-0 right-0 transform translate-x-100 -translate-y-50">
+                 <p-tag value="Canlı Sistem" severity="success" [rounded]="true" icon="pi pi-bolt" styleClass="px-3 py-1 shadow-premium animate-pulse"></p-tag>
+            </div>
         </div>
         <div class="flex gap-2">
-            <button pButton icon="pi pi-file-export" label="Rapor Al" routerLink="/reports" class="p-button-secondary p-button-outlined p-button-rounded transition-smooth"></button>
+            <button pButton icon="pi pi-file-export" label="Rapor Al" routerLink="/reports" class="p-button-secondary p-button-outlined p-button-rounded transition-smooth hover-shine"></button>
             <button pButton icon="pi pi-refresh" [loading]="loading()" (click)="refreshData()" label="Verileri Güncelle" class="p-button-outlined p-button-rounded transition-smooth"></button>
         </div>
     </div>
@@ -14,7 +18,8 @@
     <!-- Stats Grid -->
     <div class="grid mb-6">
         <div class="col-12 sm:col-6 lg:col-3">
-            <div class="glass-card p-4 border-round-2xl hover-lift">
+            <div class="glass-card-premium p-4 border-round-2xl hover-lift border-beam-container">
+                <div class="border-beam"></div>
                 <div class="flex justify-content-between align-items-start mb-3">
                     <div class="w-3rem h-3rem border-round-xl bg-blue-50 text-blue-600 flex align-items-center justify-content-center shadow-sm">
                         <i class="pi pi-box text-xl"></i>
@@ -24,32 +29,34 @@
                 @if (loading() && !stats()) {
                     <p-skeleton width="4rem" height="2rem"></p-skeleton>
                 } @else {
-                    <span class="text-3xl font-bold text-900">{{ stats()?.totalProducts || 0 }}</span>
+                    <span class="text-3xl font-bold text-900">{{ displayedStats().totalProducts }}</span>
                 }
             </div>
         </div>
 
         <div class="col-12 sm:col-6 lg:col-3">
-            <div class="glass-card p-4 border-round-2xl hover-lift">
+            <div class="glass-card-premium p-4 border-round-2xl hover-lift border-beam-container">
+                <div class="border-beam"></div>
                 <div class="flex justify-content-between align-items-start mb-3">
                     <div class="w-3rem h-3rem border-round-xl bg-red-50 text-red-600 flex align-items-center justify-content-center shadow-sm">
                         <i class="pi pi-exclamation-triangle text-xl"></i>
                     </div>
-                    @if (stats()?.lowStockCount > 0) {
-                        <p-tag severity="danger" value="Kritik" [rounded]="true"></p-tag>
+                    @if (displayedStats().lowStockCount > 0) {
+                        <p-tag severity="danger" value="Kritik" [rounded]="true" styleClass="pulse-critical px-2"></p-tag>
                     }
                 </div>
                 <span class="text-secondary font-medium block mb-1">{{ 'dashboard.low_stock_alerts' | translate }}</span>
                 @if (loading() && !stats()) {
                     <p-skeleton width="4rem" height="2rem"></p-skeleton>
                 } @else {
-                    <span class="text-3xl font-bold text-900">{{ stats()?.lowStockCount || 0 }}</span>
+                    <span class="text-3xl font-bold text-900">{{ displayedStats().lowStockCount }}</span>
                 }
             </div>
         </div>
 
         <div class="col-12 sm:col-6 lg:col-3">
-            <div class="glass-card p-4 border-round-2xl hover-lift">
+            <div class="glass-card-premium p-4 border-round-2xl hover-lift border-beam-container">
+                <div class="border-beam"></div>
                 <div class="flex justify-content-between align-items-start mb-3">
                     <div class="w-3rem h-3rem border-round-xl bg-teal-50 text-teal-600 flex align-items-center justify-content-center shadow-sm">
                         <i class="pi pi-check-square text-xl"></i>
@@ -59,13 +66,14 @@
                 @if (loading() && !stats()) {
                     <p-skeleton width="4rem" height="2rem"></p-skeleton>
                 } @else {
-                    <span class="text-3xl font-bold text-900">{{ stats()?.totalInventoryCounts || 0 }}</span>
+                    <span class="text-3xl font-bold text-900">{{ displayedStats().totalStockCounts }}</span>
                 }
             </div>
         </div>
 
         <div class="col-12 sm:col-6 lg:col-3">
-            <div class="glass-card p-4 border-round-2xl hover-lift">
+            <div class="glass-card-premium p-4 border-round-2xl hover-lift border-beam-container">
+                <div class="border-beam"></div>
                 <div class="flex justify-content-between align-items-start mb-3">
                     <div class="w-3rem h-3rem border-round-xl bg-purple-50 text-purple-600 flex align-items-center justify-content-center shadow-sm">
                         <i class="pi pi-history text-xl"></i>
@@ -75,7 +83,7 @@
                 @if (loading() && !stats()) {
                     <p-skeleton width="4rem" height="2rem"></p-skeleton>
                 } @else {
-                    <span class="text-3xl font-bold text-900">{{ stats()?.recentMovements?.length || 0 }}</span>
+                    <span class="text-3xl font-bold text-900">{{ displayedStats().totalMovements }}</span>
                 }
             </div>
         </div>
@@ -156,12 +164,13 @@
                                     <th>{{ 'movements.date' | translate }}</th>
                                 </tr>
                             </ng-template>
-                            <ng-template pTemplate="body" let-movement>
-                                <tr>
+                             <ng-template pTemplate="body" let-movement let-i="rowIndex">
+                                <tr class="stagger-item" [style.animation-delay]="i * 0.05 + 's'">
                                     <td class="font-bold text-900">{{ movement.product?.name }}</td>
                                     <td>
                                         <p-tag [value]="movement.type === 0 ? 'Giriş' : 'Çıkış'" 
                                                [severity]="movement.type === 0 ? 'success' : 'danger'"
+                                               [icon]="movement.type === 0 ? 'pi pi-arrow-down-left' : 'pi pi-arrow-up-right'"
                                                [rounded]="true" styleClass="text-xs px-2"></p-tag>
                                     </td>
                                     <td [class.text-green-600]="movement.type === 0" [class.text-red-600]="movement.type === 1" class="font-bold">
@@ -266,5 +275,13 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Quick Actions SpeedDial -->
+    <div style="position: fixed; bottom: 3rem; right: 3rem; z-index: 1000">
+        <p-speedDial [model]="speedDialItems" direction="up" transitionDelay="80" 
+                     showIcon="pi pi-bolt" hideIcon="pi pi-times" 
+                     buttonClassName="p-button-raised p-button-primary p-button-rounded shadow-premium"
+                     styleClass="speeddial-left"></p-speedDial>
     </div>
 </div>

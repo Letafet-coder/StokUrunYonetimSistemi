@@ -3,6 +3,7 @@ using Backend.Models;
 using Backend.Repositories.Implementations;
 using Backend.Repositories.Interfaces;
 using Backend.Services;
+using Backend.Middleware;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -98,6 +99,7 @@ app.UseHttpsRedirection();
 app.UseCors("AllowAngular");
 
 app.UseAuthentication();
+app.UseMiddleware<MaintenanceMiddleware>();
 app.UseAuthorization();
 
 app.MapControllers();

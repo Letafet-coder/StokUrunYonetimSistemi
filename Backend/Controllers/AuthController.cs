@@ -163,6 +163,13 @@ public class AuthController : ControllerBase
     [HttpPost("register-public")]
     public async Task<IActionResult> RegisterPublic(PublicRegisterDto registerDto)
     {
+        var settings = await _unitOfWork.SystemSettings.GetAllAsync();
+        var allowReg = settings.FirstOrDefault(s => s.Key == "AllowRegistration")?.Value ?? "true";
+        if (allowReg.ToLower() != "true")
+        {
+            return BadRequest("Sisteme yeni kayıt alımı geçici olarak durdurulmuştur.");
+        }
+
         var users = await _unitOfWork.Users.GetAllAsync();
         if (users.Any(u => u.Username == registerDto.Username))
         {

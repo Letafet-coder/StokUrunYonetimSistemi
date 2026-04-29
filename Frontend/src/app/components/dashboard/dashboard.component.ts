@@ -10,6 +10,10 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 import { SkeletonModule } from 'primeng/skeleton';
 import { ChartModule } from 'primeng/chart';
 import { ThemeService } from '../../services/theme.service';
+import { Router } from '@angular/router';
+
+import { SpeedDialModule } from 'primeng/speeddial';
+import { MenuItem } from 'primeng/api';
 
 @Component({
   selector: 'app-dashboard',
@@ -17,15 +21,24 @@ import { ThemeService } from '../../services/theme.service';
   imports: [
     CommonModule, CardModule, TableModule, TagModule, 
     ButtonModule, RouterModule, TranslatePipe, SkeletonModule,
-    ChartModule
+    ChartModule, SpeedDialModule
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   stats = signal<any>(null);
+  displayedStats = signal<any>({
+    totalProducts: 0,
+    lowStockCount: 0,
+    totalStockCounts: 0,
+    totalMovements: 0
+  });
   lowStockProducts = signal<any[]>([]);
   loading = signal(true);
+  
+  // SpeedDial Items
+  speedDialItems: MenuItem[] = [];
   
   // Chart Data
   lineData: any;
@@ -36,6 +49,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private refreshInterval: any;
   private apiService = inject(ApiService);
   private themeService = inject(ThemeService);
+  private router = inject(Router);
 
   constructor() {
     // Re-initialize charts when theme changes
@@ -46,6 +60,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.initEmptyCharts();
+    this.initSpeedDial();
     this.refreshData();
     
     this.refreshInterval = setInterval(() => {
@@ -71,6 +86,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.apiService.getStats().toPromise(),
       this.apiService.getLowStock().toPromise()
     ]).then(([statsData, lowStockData]) => {
+      if (statsData) {
+        this.animateNumbers(statsData);
+      }
       this.stats.set(statsData);
       this.lowStockProducts.set(lowStockData || []);
       this.initCharts();
@@ -79,6 +97,42 @@ export class DashboardComponent implements OnInit, OnDestroy {
       console.error('Dashboard data load error:', err);
       this.loading.set(false);
     });
+  }
+
+  animateNumbers(targetStats: any) {
+    const duration = 1200; // 1.2 seconds
+    const frameRate = 60;
+    const totalFrames = (duration / 1000) * frameRate;
+    let frame = 0;
+
+    const startStats = { ...this.displayedStats() };
+    
+    // Extract targets from backend data structure
+    const targets = {
+      totalProducts: targetStats.totalProducts || 0,
+      lowStockCount: targetStats.lowStockCount || 0,
+      totalStockCounts: targetStats.totalInventoryCounts || 0,
+      totalMovements: targetStats.recentMovements?.length || 0
+    };
+
+    const interval = setInterval(() => {
+      frame++;
+      const progress = frame / totalFrames;
+      const easeOutQuad = (t: number) => t * (2 - t);
+      const easedProgress = easeOutQuad(progress);
+
+      this.displayedStats.set({
+        totalProducts: Math.floor(startStats.totalProducts + (targets.totalProducts - startStats.totalProducts) * easedProgress),
+        lowStockCount: Math.floor(startStats.lowStockCount + (targets.lowStockCount - startStats.lowStockCount) * easedProgress),
+        totalStockCounts: Math.floor(startStats.totalStockCounts + (targets.totalStockCounts - startStats.totalStockCounts) * easedProgress),
+        totalMovements: Math.floor(startStats.totalMovements + (targets.totalMovements - startStats.totalMovements) * easedProgress)
+      });
+
+      if (frame >= totalFrames) {
+        clearInterval(interval);
+        this.displayedStats.set(targets);
+      }
+    }, 1000 / frameRate);
   }
 
   initCharts() {
@@ -181,5 +235,25 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   hasPieData() {
     return this.pieData?.datasets?.[0]?.data?.some((v: any) => v > 0);
+  }
+
+  initSpeedDial() {
+    this.speedDialItems = [
+      {
+        icon: 'pi pi-plus',
+        tooltipOptions: { tooltipLabel: 'Yeni Ürün' },
+        command: () => { this.router.navigate(['/products']); }
+      },
+      {
+        icon: 'pi pi-file-export',
+        tooltipOptions: { tooltipLabel: 'Rapor Al' },
+        command: () => { this.router.navigate(['/reports']); }
+      },
+      {
+        icon: 'pi pi-refresh',
+        tooltipOptions: { tooltipLabel: 'Verileri Güncelle' },
+        command: () => { this.refreshData(); }
+      }
+    ];
   }
 }

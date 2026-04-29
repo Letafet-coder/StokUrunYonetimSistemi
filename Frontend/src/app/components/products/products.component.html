@@ -30,8 +30,8 @@
                 <th style="width: 14rem">{{ 'common.actions' | translate }}</th>
             </tr>
         </ng-template>
-        <ng-template pTemplate="body" let-product>
-            <tr [ngClass]="{'critical-row': product.stockQuantity <= product.criticalLevel && product.stockQuantity > 0, 'out-of-stock-row': product.stockQuantity <= 0}">
+        <ng-template pTemplate="body" let-product let-i="rowIndex">
+            <tr class="stagger-item" [style.animation-delay]="i * 0.03 + 's'" [ngClass]="{'critical-row': product.stockQuantity <= product.criticalLevel && product.stockQuantity > 0, 'out-of-stock-row': product.stockQuantity <= 0}">
                 <td class="font-bold text-secondary">{{product.sku || '---'}}</td>
                 <td>{{product.name}}</td>
                 <td>{{product.category?.name}}</td>
@@ -106,7 +106,7 @@
             </div>
         </div>
         <div class="flex flex-column gap-2">
-            <label for="tracking" class="font-bold">Ürün Takip Yöntemi</label>
+            <label for="tracking" class="font-bold">{{ 'enterprise.tracking_method_label' | translate }}</label>
             <p-select [options]="trackingTypeOptions" [(ngModel)]="product.tracking" optionLabel="label" optionValue="value" appendTo="body" class="w-full"></p-select>
         </div>
     </div>
@@ -159,7 +159,7 @@
         </ng-container>
         
         <div class="col-12" *ngIf="selectedProduct?.tracking && selectedProduct?.tracking !== 0">
-            <label class="block font-bold mb-2">Parti / Seri Numarası</label>
+            <label class="block font-bold mb-2">{{ 'enterprise.lot_serial_no_label' | translate }}</label>
             <p-select [options]="lotSerials" [(ngModel)]="stockMovement.lotSerialId" 
                       optionLabel="identifier" optionValue="id" placeholder="No Seçiniz" appendTo="body" class="w-full"></p-select>
             <small class="text-secondary mt-1 block" *ngIf="stockMovement.type === 0">

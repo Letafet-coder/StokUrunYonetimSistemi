@@ -18,6 +18,11 @@ import { AuthService } from '../../services/auth.service';
       <!-- Background Overlay -->
       <div class="bg-overlay"></div>
       
+      <!-- Dynamic Background Decor -->
+      <div class="bg-grid-subtle opacity-20"></div>
+      <div class="floating-blob blob-1"></div>
+      <div class="floating-blob blob-2"></div>
+      
       <!-- Futuristic Floating Elements -->
       <div class="floating-widgets hidden md:block">
         <div class="widget widget-left-top glass-widget animate-float-slow">
@@ -51,7 +56,8 @@ import { AuthService } from '../../services/auth.service';
 
       <!-- Main Login Card -->
       <div class="login-card-container z-10 p-3">
-        <div class="login-card shadow-premium border-round-2xl overflow-hidden p-4 md:p-5">
+        <div class="login-card shadow-premium border-round-2xl overflow-hidden p-4 md:p-5 border-beam-container">
+          <div class="border-beam"></div>
           <div class="text-center mb-4">
             <div class="logo-box mb-3 shadow-3">
               <i class="pi pi-box"></i>
