@@ -1,0 +1,270 @@
+<div class="p-4 md:p-6 fadein">
+    <!-- Header -->
+    <div class="flex flex-column md:flex-row md:align-items-center justify-content-between mb-6 gap-3">
+        <div>
+            <h1 class="text-3xl font-bold m-0 text-900 tracking-tight">{{ 'nav.dashboard' | translate }}</h1>
+            <p class="text-secondary m-0 mt-1 opacity-70">{{ 'dashboard.recent_desc' | translate }}</p>
+        </div>
+        <div class="flex gap-2">
+            <button pButton icon="pi pi-file-export" label="Rapor Al" routerLink="/reports" class="p-button-secondary p-button-outlined p-button-rounded transition-smooth"></button>
+            <button pButton icon="pi pi-refresh" [loading]="loading()" (click)="refreshData()" label="Verileri Güncelle" class="p-button-outlined p-button-rounded transition-smooth"></button>
+        </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid mb-6">
+        <div class="col-12 sm:col-6 lg:col-3">
+            <div class="glass-card p-4 border-round-2xl hover-lift">
+                <div class="flex justify-content-between align-items-start mb-3">
+                    <div class="w-3rem h-3rem border-round-xl bg-blue-50 text-blue-600 flex align-items-center justify-content-center shadow-sm">
+                        <i class="pi pi-box text-xl"></i>
+                    </div>
+                </div>
+                <span class="text-secondary font-medium block mb-1">{{ 'dashboard.total_products' | translate }}</span>
+                @if (loading() && !stats()) {
+                    <p-skeleton width="4rem" height="2rem"></p-skeleton>
+                } @else {
+                    <span class="text-3xl font-bold text-900">{{ stats()?.totalProducts || 0 }}</span>
+                }
+            </div>
+        </div>
+
+        <div class="col-12 sm:col-6 lg:col-3">
+            <div class="glass-card p-4 border-round-2xl hover-lift">
+                <div class="flex justify-content-between align-items-start mb-3">
+                    <div class="w-3rem h-3rem border-round-xl bg-red-50 text-red-600 flex align-items-center justify-content-center shadow-sm">
+                        <i class="pi pi-exclamation-triangle text-xl"></i>
+                    </div>
+                    @if (stats()?.lowStockCount > 0) {
+                        <p-tag severity="danger" value="Kritik" [rounded]="true"></p-tag>
+                    }
+                </div>
+                <span class="text-secondary font-medium block mb-1">{{ 'dashboard.low_stock_alerts' | translate }}</span>
+                @if (loading() && !stats()) {
+                    <p-skeleton width="4rem" height="2rem"></p-skeleton>
+                } @else {
+                    <span class="text-3xl font-bold text-900">{{ stats()?.lowStockCount || 0 }}</span>
+                }
+            </div>
+        </div>
+
+        <div class="col-12 sm:col-6 lg:col-3">
+            <div class="glass-card p-4 border-round-2xl hover-lift">
+                <div class="flex justify-content-between align-items-start mb-3">
+                    <div class="w-3rem h-3rem border-round-xl bg-teal-50 text-teal-600 flex align-items-center justify-content-center shadow-sm">
+                        <i class="pi pi-check-square text-xl"></i>
+                    </div>
+                </div>
+                <span class="text-secondary font-medium block mb-1">Stok Sayımları</span>
+                @if (loading() && !stats()) {
+                    <p-skeleton width="4rem" height="2rem"></p-skeleton>
+                } @else {
+                    <span class="text-3xl font-bold text-900">{{ stats()?.totalInventoryCounts || 0 }}</span>
+                }
+            </div>
+        </div>
+
+        <div class="col-12 sm:col-6 lg:col-3">
+            <div class="glass-card p-4 border-round-2xl hover-lift">
+                <div class="flex justify-content-between align-items-start mb-3">
+                    <div class="w-3rem h-3rem border-round-xl bg-purple-50 text-purple-600 flex align-items-center justify-content-center shadow-sm">
+                        <i class="pi pi-history text-xl"></i>
+                    </div>
+                </div>
+                <span class="text-secondary font-medium block mb-1">{{ 'dashboard.recent_movements' | translate }}</span>
+                @if (loading() && !stats()) {
+                    <p-skeleton width="4rem" height="2rem"></p-skeleton>
+                } @else {
+                    <span class="text-3xl font-bold text-900">{{ stats()?.recentMovements?.length || 0 }}</span>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Grid -->
+    <div class="grid mb-6">
+        <div class="col-12 lg:col-7">
+            <div class="glass-card border-round-2xl p-4 h-full">
+                <div class="flex align-items-center justify-content-between mb-4">
+                    <div>
+                        <h3 class="m-0 text-900 font-bold">Stok Hareket Trendi</h3>
+                        <p class="m-0 text-xs text-secondary opacity-70 mt-1">Son 7 günlük işlem yoğunluğu</p>
+                    </div>
+                    <i class="pi pi-chart-line text-blue-500"></i>
+                </div>
+                <div class="h-20rem">
+                    @if (loading() && !lineData) {
+                        <p-skeleton width="100%" height="100%"></p-skeleton>
+                    } @else {
+                        <p-chart type="line" [data]="lineData" [options]="lineOptions" height="100%"></p-chart>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-12 lg:col-5">
+            <div class="glass-card border-round-2xl p-4 h-full">
+                <div class="flex align-items-center justify-content-between mb-4">
+                    <div>
+                        <h3 class="m-0 text-900 font-bold">Kategori Bazlı Değer</h3>
+                        <p class="m-0 text-xs text-secondary opacity-70 mt-1">Stok maliyet dağılımı</p>
+                    </div>
+                    <i class="pi pi-chart-pie text-purple-500"></i>
+                </div>
+                <div class="h-20rem flex align-items-center justify-content-center">
+                    @if (loading() && !pieData) {
+                        <p-skeleton shape="circle" size="15rem"></p-skeleton>
+                    } @else if (hasPieData()) {
+                        <p-chart type="pie" [data]="pieData" [options]="pieOptions" height="100%"></p-chart>
+                    } @else {
+                        <div class="text-center">
+                            <i class="pi pi-chart-pie text-4xl text-secondary mb-3 opacity-30"></i>
+                            <p class="m-0 text-secondary opacity-70">Henüz stok değeri oluşmadı.</p>
+                            <p class="m-0 text-xs text-secondary opacity-50 mt-1">Ürünlere stok girişi yapıldığında burada maliyet dağılımı görünecektir.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid">
+        <!-- Recent Movements Table -->
+        <div class="col-12 lg:col-8">
+            <div class="flex flex-column gap-6">
+                <!-- Movements -->
+                <div class="glass-card border-round-2xl overflow-hidden">
+                    <div class="p-4 border-bottom-1 border-soft flex align-items-center justify-content-between">
+                        <div>
+                            <h3 class="m-0 text-900 font-bold">{{ 'dashboard.recent_movements_title' | translate }}</h3>
+                            <p class="m-0 text-xs text-secondary opacity-70 mt-1">Son stok hareketleri</p>
+                        </div>
+                        <button pButton icon="pi pi-arrow-right" [routerLink]="['/movements']" label="Tümünü Gör" class="p-button-text p-button-sm"></button>
+                    </div>
+                    
+                    @if (loading() && !stats()) {
+                        <div class="p-4">
+                            <p-skeleton styleClass="mb-2"></p-skeleton>
+                            <p-skeleton styleClass="mb-2"></p-skeleton>
+                        </div>
+                    } @else {
+                        <p-table [value]="stats()?.recentMovements || []" styleClass="modern-table" [responsiveLayout]="'scroll'">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th>{{ 'dashboard.product_name' | translate }}</th>
+                                    <th>{{ 'movements.type' | translate }}</th>
+                                    <th>{{ 'movements.quantity' | translate }}</th>
+                                    <th>{{ 'movements.date' | translate }}</th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-movement>
+                                <tr>
+                                    <td class="font-bold text-900">{{ movement.product?.name }}</td>
+                                    <td>
+                                        <p-tag [value]="movement.type === 0 ? 'Giriş' : 'Çıkış'" 
+                                               [severity]="movement.type === 0 ? 'success' : 'danger'"
+                                               [rounded]="true" styleClass="text-xs px-2"></p-tag>
+                                    </td>
+                                    <td [class.text-green-600]="movement.type === 0" [class.text-red-600]="movement.type === 1" class="font-bold">
+                                        {{ movement.type === 0 ? '+' : '-' }}{{ movement.quantity }}
+                                    </td>
+                                    <td class="text-secondary text-sm">{{ movement.date | date:'HH:mm' }}</td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    }
+                </div>
+
+                <!-- Recent Audits -->
+                <div class="glass-card border-round-2xl overflow-hidden">
+                    <div class="p-4 border-bottom-1 border-soft flex align-items-center justify-content-between">
+                        <div>
+                            <h3 class="m-0 text-900 font-bold">Son Stok Sayımları</h3>
+                            <p class="m-0 text-xs text-secondary opacity-70 mt-1">Sistem ve fiziksel stok karşılaştırmaları</p>
+                        </div>
+                        <button pButton icon="pi pi-arrow-right" [routerLink]="['/inventory-audit']" label="Tümünü Gör" class="p-button-text p-button-sm"></button>
+                    </div>
+                    
+                    @if (loading() && !stats()) {
+                        <div class="p-4">
+                            <p-skeleton styleClass="mb-2"></p-skeleton>
+                        </div>
+                    } @else {
+                        <p-table [value]="stats()?.recentInventoryCounts || []" styleClass="modern-table" [responsiveLayout]="'scroll'">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th>Tarih</th>
+                                    <th>Açıklama</th>
+                                    <th>Sorumlu</th>
+                                    <th>Durum</th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-count>
+                                <tr>
+                                    <td class="font-bold text-900 text-sm">{{ count.date | date:'dd.MM.yyyy HH:mm' }}</td>
+                                    <td class="text-secondary">{{ count.description || 'Not yok' }}</td>
+                                    <td>
+                                        <div class="flex align-items-center gap-2">
+                                            <div class="w-1.5rem h-1.5rem border-circle bg-blue-50 text-blue-600 flex align-items-center justify-content-center text-xs">
+                                                {{ count.createdByUser?.fullName?.charAt(0) }}
+                                            </div>
+                                            <span class="text-xs">{{ count.createdByUser?.fullName }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <p-tag value="Tamamlandı" severity="success" [rounded]="true" styleClass="text-xs"></p-tag>
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Low Stock -->
+        <div class="col-12 lg:col-4">
+            <div class="glass-card border-round-2xl overflow-hidden h-full">
+                <div class="p-4 border-bottom-1 border-soft flex align-items-center justify-content-between bg-red-50">
+                    <div>
+                        <h3 class="m-0 text-red-900 font-bold">{{ 'dashboard.critical_products' | translate }}</h3>
+                        <p class="m-0 text-xs text-red-700 opacity-70 mt-1">Hemen müdahale gerekebilir</p>
+                    </div>
+                    <i class="pi pi-bell text-red-500 animate-pulse"></i>
+                </div>
+
+                <div class="p-4 flex flex-column gap-3">
+                    @if (loading() && lowStockProducts().length === 0) {
+                        <p-skeleton height="3rem" styleClass="mb-2 border-round-xl"></p-skeleton>
+                        <p-skeleton height="3rem" styleClass="mb-2 border-round-xl"></p-skeleton>
+                    } @else {
+                        @for (product of lowStockProducts(); track product.id) {
+                            <div class="flex align-items-center justify-content-between p-3 border-round-xl bg-surface-50 border-1 border-soft shadow-hover transition-smooth">
+                                <div class="flex align-items-center gap-3">
+                                    <div class="w-2rem h-2rem border-round bg-red-100 text-red-600 flex align-items-center justify-content-center">
+                                        <i class="pi pi-exclamation-circle text-xs"></i>
+                                    </div>
+                                    <div class="flex flex-column">
+                                        <span class="text-sm font-bold text-900">{{ product.name }}</span>
+                                        <span class="text-xs text-secondary">{{ product.category?.name }}</span>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <span class="block text-sm font-bold text-red-600">{{ product.stockQuantity }} {{ product.unit }}</span>
+                                    <span class="text-xs text-secondary opacity-50">Kritik: {{ product.criticalLevel }}</span>
+                                </div>
+                            </div>
+                        } @empty {
+                            <div class="text-center py-5">
+                                <div class="w-4rem h-4rem border-circle bg-green-50 text-green-500 flex align-items-center justify-content-center mx-auto mb-3">
+                                    <i class="pi pi-check-circle text-2xl"></i>
+                                </div>
+                                <p class="m-0 font-bold text-900">Stoklar Güvende</p>
+                                <p class="m-0 text-xs text-secondary opacity-70 mt-1">Tüm ürünler güvenli seviyede.</p>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,84 @@
+<div class="card shadow-2 border-round-xl p-4">
+    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center gap-3 mb-5">
+        <div class="flex flex-column">
+            <h2 class="m-0 font-bold text-3xl text-900">{{ 'enterprise.lots_serials' | translate }}</h2>
+            <p class="text-secondary m-0">Parti ve seri numarası bazlı ürün takibi</p>
+        </div>
+        <div class="flex flex-row gap-2 align-items-center">
+            <div class="relative w-full md:w-20rem">
+                <i class="pi pi-search text-gray-400 absolute z-1" style="top: 50%; transform: translateY(-50%); left: 1rem;"></i>
+                <input pInputText type="text" (input)="dt.filterGlobal($any($event.target).value, 'contains')" placeholder="Parti/Seri Ara..." class="w-full bg-white border-1 border-300 pl-5" style="padding-left: 2.5rem !important;" />
+            </div>
+            <p-button label="Yeni Tanımlayıcı" icon="pi pi-plus" (onClick)="showDialogToAdd()" styleClass="p-button-raised p-button-primary px-4"></p-button>
+        </div>
+    </div>
+
+    <p-table #dt [value]="items" [rows]="10" [paginator]="true" [responsiveLayout]="'scroll'" styleClass="p-datatable-sm shadow-soft"
+             [globalFilterFields]="['identifier', 'product.name']" [showCurrentPageReport]="true">
+        <ng-template pTemplate="header">
+            <tr>
+                <th>{{ 'products.sku' | translate }}</th>
+                <th>{{ 'products.name' | translate }}</th>
+                <th>Takip No (Lot/Serial)</th>
+                <th>{{ 'products.status' | translate }}</th>
+                <th>S.K.T (Expiration)</th>
+                <th style="width: 8rem">{{ 'common.actions' | translate }}</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-item>
+            <tr>
+                <td><span class="font-bold text-secondary">{{item.product?.sku || '---'}}</span></td>
+                <td>{{item.product?.name}}</td>
+                <td>
+                    <div class="flex align-items-center gap-2">
+                        <i class="pi" [ngClass]="item.product?.tracking === 1 ? 'pi-box text-blue-500' : 'pi-id-card text-orange-500'"></i>
+                        <span class="font-bold text-900">{{item.identifier}}</span>
+                    </div>
+                </td>
+                <td>
+                    <p-tag [value]="item.product?.tracking === 1 ? 'PARTİ (LOT)' : 'SERİ NO'" 
+                           [severity]="item.product?.tracking === 1 ? 'info' : 'warn'"></p-tag>
+                </td>
+                <td>
+                    <p-tag *ngIf="item.expirationDate" [value]="(($any(item.expirationDate) | date:'dd.MM.yyyy') || '')" 
+                           [severity]="getExpirationSeverity(item)"></p-tag>
+                    <span *ngIf="!item.expirationDate" class="text-gray-400 italic">---</span>
+                </td>
+                <td>
+                    <p-button icon="pi pi-trash" (onClick)="deleteItem(item)" styleClass="p-button-text p-button-sm p-button-danger"></p-button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td colspan="6" class="p-4 text-center text-secondary">
+                    Henüz kayıtlı bir parti veya seri numarası bulunmuyor.
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<p-dialog header="Yeni Parti/Seri Numarası" [(visible)]="displayDialog" [modal]="true" [style]="{width: '450px'}">
+    <div class="grid p-fluid row-gap-3 mt-2">
+        <div class="col-12">
+            <label class="block font-bold mb-2">Ürün Seçin</label>
+            <p-select [options]="products" [(ngModel)]="item.productId" optionLabel="name" optionValue="id" placeholder="Takip uygulanacak ürün..." filter="true" class="w-full"></p-select>
+        </div>
+        <div class="col-12">
+            <label class="block font-bold mb-2">Tanımlayıcı (Parti/Lot No veya Seri No)</label>
+            <input pInputText [(ngModel)]="item.identifier" placeholder="Örn: LOT-2024-001 veya SN-8829" class="w-full" />
+        </div>
+        <div class="col-12">
+            <label class="block font-bold mb-2">Son Kullanma Tarihi (Opsiyonel)</label>
+            <p-datepicker [(ngModel)]="item.expirationDate" dateFormat="dd.mm.yy" [showIcon]="true" class="w-full"></p-datepicker>
+        </div>
+    </div>
+    <ng-template pTemplate="footer">
+        <p-button label="İptal" icon="pi pi-times" (onClick)="displayDialog=false" styleClass="p-button-text"></p-button>
+        <p-button label="Kaydet" icon="pi pi-check" (onClick)="save()" styleClass="p-button-raised"></p-button>
+    </ng-template>
+</p-dialog>
+
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>

@@ -1,0 +1,200 @@
+<div class="glass-card border-round-2xl p-4">
+    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center gap-4 mb-6">
+        <div class="flex flex-column">
+            <h2 class="m-0 font-bold text-3xl text-900 tracking-tight">{{ 'products.title' | translate }}</h2>
+            <p class="text-secondary m-0 mt-1 opacity-70">{{ 'products.subtitle' | translate }}</p>
+        </div>
+        <div class="flex flex-row gap-3 align-items-center">
+            <div class="relative w-full md:w-20rem">
+                <i class="pi pi-search text-dim absolute z-1" style="top: 50%; transform: translateY(-50%); left: 1rem;"></i>
+                <input pInputText type="text" (input)="dt.filterGlobal($any($event.target).value, 'contains')" [placeholder]="'products.search_placeholder' | translate" class="w-full bg-white/50 border-soft pl-5" style="padding-left: 2.5rem !important;" />
+            </div>
+            @if (authService.isAdmin()) {
+                <p-button [label]="'products.new_product' | translate" icon="pi pi-plus" (onClick)="showDialogToAdd()" styleClass="p-button-raised bg-primary border-none px-4 shadow-premium"></p-button>
+            }
+        </div>
+    </div>
+
+    <p-table #dt [value]="products" [rows]="10" [paginator]="true" [responsiveLayout]="'scroll'" styleClass="modern-table"
+             [globalFilterFields]="['name', 'category.name']" [showCurrentPageReport]="true"
+             currentPageReportTemplate="{first}-{last} / {totalRecords}">
+        <ng-template pTemplate="header">
+            <tr>
+                <th style="width: 8rem">{{ 'products.sku' | translate }}</th>
+                <th>{{ 'products.name' | translate }}</th>
+                <th>{{ 'products.category' | translate }}</th>
+                <th>{{ 'products.price' | translate }}</th>
+                <th>{{ 'products.stock_unit' | translate }}</th>
+                <th>{{ 'products.critical' | translate }}</th>
+                <th>{{ 'products.status' | translate }}</th>
+                <th style="width: 14rem">{{ 'common.actions' | translate }}</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-product>
+            <tr [ngClass]="{'critical-row': product.stockQuantity <= product.criticalLevel && product.stockQuantity > 0, 'out-of-stock-row': product.stockQuantity <= 0}">
+                <td class="font-bold text-secondary">{{product.sku || '---'}}</td>
+                <td>{{product.name}}</td>
+                <td>{{product.category?.name}}</td>
+                <td>{{product.price | currency:'TRY':'symbol':'1.2-2'}}</td>
+                <td>
+                    <span class="font-bold text-900">{{product.stockQuantity}}</span>
+                    <span class="ml-1 text-xs text-secondary font-medium uppercase">{{product.unit}}</span>
+                </td>
+                <td>{{product.criticalLevel}}</td>
+                <td>
+                    <p-tag [value]="product.stockQuantity <= 0 ? ('products.status_out' | translate) : (product.stockQuantity <= product.criticalLevel ? ('products.status_critical' | translate) : ('products.status_normal' | translate))" 
+                           [severity]="getStockSeverity(product)"></p-tag>
+                </td>
+                <td>
+                    <div class="flex gap-2">
+                        <p-button icon="pi pi-sync" (onClick)="openStockDialog(product)" styleClass="p-button-outlined p-button-sm p-button-info" [pTooltip]="'products.movement_title' | translate"></p-button>
+                        @if (authService.isAdmin()) {
+                            <p-button icon="pi pi-pencil" (onClick)="editProduct(product)" styleClass="p-button-text p-button-sm p-button-primary" [pTooltip]="'common.edit' | translate"></p-button>
+                            <p-button icon="pi pi-trash" (onClick)="deleteProduct(product)" styleClass="p-button-text p-button-sm p-button-danger" [pTooltip]="'common.delete' | translate"></p-button>
+                        }
+                    </div>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td [attr.colspan]="authService.isAdmin() ? 7 : 6" class="p-0">
+                    <div class="flex flex-column align-items-center justify-content-center py-8 bg-50 border-round-bottom-xl">
+                        <div class="w-5rem h-5rem bg-white border-circle flex align-items-center justify-content-center shadow-1 mb-4">
+                            <i class="pi pi-box text-4xl text-gray-300"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-900 mb-2">{{ 'products.not_found' | translate }}</h3>
+                        <p class="text-secondary mb-4">{{ 'products.not_found_desc' | translate }}</p>
+                        @if (authService.isAdmin()) {
+                            <p-button [label]="'products.add_first' | translate" icon="pi pi-plus" (onClick)="showDialogToAdd()" styleClass="p-button-raised p-button-success px-5"></p-button>
+                        }
+                    </div>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<p-dialog [header]="(isEdit ? 'products.edit_title' : 'products.new_product') | translate" [(visible)]="displayDialog" [modal]="true" [style]="{width: '450px'}">
+    <div class="flex flex-column gap-3 mt-2 p-fluid w-full">
+        <div class="flex flex-column gap-2">
+            <label for="name" class="font-bold">{{ 'products.name' | translate }}</label>
+            <input pInputText id="name" [(ngModel)]="product.name" required autofocus class="w-full" autocomplete="off" />
+        </div>
+        <div class="flex flex-column gap-2">
+            <label for="category" class="font-bold">{{ 'products.category' | translate }}</label>
+            <p-select [options]="categories" [(ngModel)]="product.categoryId" optionLabel="name" optionValue="id" placeholder="Kategori Seçin" appendTo="body" class="w-full"></p-select>
+        </div>
+        <div class="flex flex-column md:flex-row gap-3">
+            <div class="flex flex-column gap-2 flex-1">
+                <label for="price" class="font-bold">{{ 'products.price' | translate }}</label>
+                <p-inputNumber id="price" [(ngModel)]="product.price" mode="currency" currency="TRY" locale="tr-TR" styleClass="w-full"></p-inputNumber>
+            </div>
+            <div class="flex flex-column gap-2 flex-1">
+                <label for="unit" class="font-bold">{{ 'products.unit' | translate }}</label>
+                <input pInputText id="unit" [(ngModel)]="product.unit" placeholder="Örn: Adet, KG" class="w-full" />
+            </div>
+        </div>
+        <div class="flex flex-column md:flex-row gap-3">
+            <div class="flex flex-column gap-2 flex-1">
+                <label for="sku" class="font-bold">{{ 'products.sku' | translate }}</label>
+                <input pInputText id="sku" [(ngModel)]="product.sku" placeholder="ELK-001" class="w-full" autocomplete="off" />
+            </div>
+            <div class="flex flex-column gap-2 flex-1">
+                <label for="criticalLevel" class="font-bold">{{ 'products.critical' | translate }}</label>
+                <p-inputNumber id="criticalLevel" [(ngModel)]="product.criticalLevel" styleClass="w-full"></p-inputNumber>
+            </div>
+        </div>
+        <div class="flex flex-column gap-2">
+            <label for="tracking" class="font-bold">Ürün Takip Yöntemi</label>
+            <p-select [options]="trackingTypeOptions" [(ngModel)]="product.tracking" optionLabel="label" optionValue="value" appendTo="body" class="w-full"></p-select>
+        </div>
+    </div>
+    <ng-template pTemplate="footer">
+        <p-button [label]="'common.cancel' | translate" icon="pi pi-times" (onClick)="displayDialog=false" styleClass="p-button-text"></p-button>
+        <p-button [label]="'common.save' | translate" icon="pi pi-check" (onClick)="save()" styleClass="p-button-raised"></p-button>
+    </ng-template>
+</p-dialog>
+
+<!-- Stock Transaction Dialog -->
+<p-dialog [header]="'products.movement_title' | translate" [(visible)]="displayStockDialog" [modal]="true" [style]="{width: '500px'}" styleClass="stock-dialog">
+    <div *ngIf="selectedProduct" class="mb-4 p-3 bg-50 border-round-lg flex align-items-center gap-3">
+        <div class="w-3rem h-3rem bg-primary-gradient border-circle flex align-items-center justify-content-center text-white font-bold">
+            {{selectedProduct.name.charAt(0)}}
+        </div>
+        <div>
+            <div class="font-bold text-900">{{selectedProduct.name}}</div>
+            <div class="text-sm text-secondary">{{ 'dashboard.current_stock' | translate }}: <span class="font-bold text-primary">{{selectedProduct.stockQuantity}} {{selectedProduct.unit}}</span></div>
+        </div>
+    </div>
+
+    <div class="grid p-fluid row-gap-4">
+        <div class="col-12">
+            <label class="block font-bold mb-2">{{ 'common.actions' | translate }}</label>
+            <p-selectButton [options]="movementTypeOptions" [(ngModel)]="stockMovement.type" optionLabel="label" optionValue="value" styleClass="w-full"></p-selectButton>
+        </div>
+        
+        <div class="col-12" *ngIf="stockMovement.type === 0">
+            <label class="block font-bold mb-2">{{ 'enterprise.to_location' | translate }}</label>
+            <p-select [options]="locations" [(ngModel)]="stockMovement.toLocationId" 
+                      optionLabel="name" optionValue="id" placeholder="Hedef Konum Seçin" appendTo="body" class="w-full"></p-select>
+        </div>
+        <div class="col-12" *ngIf="stockMovement.type === 1">
+            <label class="block font-bold mb-2">{{ 'enterprise.from_location' | translate }}</label>
+            <p-select [options]="locations" [(ngModel)]="stockMovement.fromLocationId" 
+                      optionLabel="name" optionValue="id" placeholder="Kaynak Konum Seçin" appendTo="body" class="w-full"></p-select>
+        </div>
+
+        <ng-container *ngIf="stockMovement.type === 3">
+            <div class="col-12 md:col-6">
+                <label class="block font-bold mb-2">{{ 'enterprise.from_location' | translate }}</label>
+                <p-select [options]="locations" [(ngModel)]="stockMovement.fromLocationId" 
+                        optionLabel="name" optionValue="id" placeholder="Kaynak" appendTo="body" class="w-full"></p-select>
+            </div>
+            <div class="col-12 md:col-6">
+                <label class="block font-bold mb-2">{{ 'enterprise.to_location' | translate }}</label>
+                <p-select [options]="locations" [(ngModel)]="stockMovement.toLocationId" 
+                        optionLabel="name" optionValue="id" placeholder="Hedef" appendTo="body" class="w-full"></p-select>
+            </div>
+        </ng-container>
+        
+        <div class="col-12" *ngIf="selectedProduct?.tracking && selectedProduct?.tracking !== 0">
+            <label class="block font-bold mb-2">Parti / Seri Numarası</label>
+            <p-select [options]="lotSerials" [(ngModel)]="stockMovement.lotSerialId" 
+                      optionLabel="identifier" optionValue="id" placeholder="No Seçiniz" appendTo="body" class="w-full"></p-select>
+            <small class="text-secondary mt-1 block" *ngIf="stockMovement.type === 0">
+                Yeni bir seri/lot ise önce <a routerLink="/lots" (click)="displayStockDialog=false">Ürün Takibi</a> menüsünden kaydediniz.
+            </small>
+        </div>
+
+        <div class="col-12 md:col-6">
+            <label class="block font-bold mb-2">{{ 'movements.quantity' | translate }} ({{selectedProduct?.unit}})</label>
+            <p-inputNumber [(ngModel)]="stockMovement.quantity" [min]="1" [showButtons]="true" class="w-full"></p-inputNumber>
+        </div>
+
+        <div class="col-12 md:col-6">
+            <label class="block font-bold mb-2">{{ 'movements.doc_no' | translate }}</label>
+            <input pInputText [(ngModel)]="stockMovement.documentNumber" placeholder="FT-2024-001" class="w-full" autocomplete="off" />
+        </div>
+
+        <div class="col-12" *ngIf="stockMovement.type !== 3">
+            <label class="block font-bold mb-2">{{ stockMovement.type === 0 ? 'Tedarikçi' : 'Müşteri / Bölüm' }}</label>
+            <input pInputText [(ngModel)]="stockMovement.supplierOrClient" [placeholder]="stockMovement.type === 0 ? 'Tedarikçi Firma Adı' : 'Alıcı veya İlgili Kişi'" class="w-full" autocomplete="off" />
+        </div>
+
+        <div class="col-12">
+            <label class="block font-bold mb-2">{{ 'categories.description' | translate }}</label>
+            <textarea pInputTextarea [(ngModel)]="stockMovement.description" rows="2" class="w-full" placeholder="İşlem ile ilgili notlar..."></textarea>
+        </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+        <p-button [label]="'common.cancel' | translate" icon="pi pi-times" (onClick)="displayStockDialog=false" styleClass="p-button-text"></p-button>
+        <p-button [label]="(stockMovement.type === 0 ? 'products.stock_entry' : (stockMovement.type === 1 ? 'products.stock_exit' : 'enterprise.transfer')) | translate" 
+                  [icon]="stockMovement.type === 0 ? 'pi pi-arrow-down-right' : (stockMovement.type === 1 ? 'pi pi-arrow-up-right' : 'pi pi-directions')" 
+                  (onClick)="saveStockMovement()" 
+                  [severity]="stockMovement.type === 0 ? 'success' : (stockMovement.type === 1 ? 'danger' : 'info')"></p-button>
+    </ng-template>
+</p-dialog>
+
+<p-toast></p-toast>

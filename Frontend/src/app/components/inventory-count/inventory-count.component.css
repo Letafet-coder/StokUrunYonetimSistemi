@@ -1,0 +1,43 @@
+.p-buttonset-glass {
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    padding: 2px;
+}
+
+:host ::ng-deep .p-selectbutton.p-buttonset-glass .p-button {
+    background: transparent;
+    border: none;
+    color: var(--text-color-secondary);
+    transition: all 0.3s ease;
+}
+
+:host ::ng-deep .p-selectbutton.p-buttonset-glass .p-button.p-highlight {
+    background: white;
+    color: var(--primary-color);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.shadow-soft {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.bg-blue-50 {
+    background-color: rgba(59, 130, 246, 0.05) !important;
+}
+
+.bg-red-50 {
+    background-color: rgba(239, 68, 68, 0.05) !important;
+}
+
+:host ::ng-deep .p-datatable.p-datatable-gridlines .p-datatable-tbody > tr > td {
+    padding: 0.75rem 1rem;
+}
+
+:host ::ng-deep .p-inputnumber-buttons-horizontal .p-inputnumber-input {
+    width: 4rem;
+    min-width: 4rem;
+}

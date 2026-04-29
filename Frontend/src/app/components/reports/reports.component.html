@@ -1,0 +1,161 @@
+<div class="p-4 md:p-6 fadein">
+    <!-- Header -->
+    <div class="flex flex-column md:flex-row md:align-items-center justify-content-between mb-6 gap-3">
+        <div>
+            <h1 class="text-3xl font-bold m-0 text-900 tracking-tight">{{ 'reports.title' | translate }}</h1>
+            <p class="text-secondary m-0 mt-1 opacity-70">{{ 'reports.subtitle' | translate }}</p>
+        </div>
+        <div class="flex gap-2">
+            <p-button [label]="'reports.refresh' | translate" icon="pi pi-refresh" [loading]="loading()" (onClick)="loadData()" styleClass="p-button-outlined p-button-rounded"></p-button>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="grid mb-6">
+        <div class="col-12 sm:col-6 lg:col-3">
+            <div class="glass-card p-4 border-round-2xl hover-lift">
+                <div class="flex align-items-center gap-3">
+                    <div class="w-3rem h-3rem border-round-xl bg-blue-50 text-blue-600 flex align-items-center justify-content-center">
+                        <i class="pi pi-box text-xl"></i>
+                    </div>
+                    <div class="flex flex-column">
+                        <span class="text-secondary font-medium text-sm">{{ 'dashboard.total_products' | translate }}</span>
+                        @if (loading()) { <p-skeleton width="3rem" height="1.5rem"></p-skeleton> }
+                        @else { <span class="text-2xl font-bold text-900">{{ summary()?.totalProducts }}</span> }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 sm:col-6 lg:col-3">
+            <div class="glass-card p-4 border-round-2xl hover-lift">
+                <div class="flex align-items-center gap-3">
+                    <div class="w-3rem h-3rem border-round-xl bg-green-50 text-green-600 flex align-items-center justify-content-center">
+                        <i class="pi pi-dollar text-xl"></i>
+                    </div>
+                    <div class="flex flex-column">
+                        <span class="text-secondary font-medium text-sm">{{ 'reports.inventory_value' | translate }}</span>
+                        @if (loading()) { <p-skeleton width="5rem" height="1.5rem"></p-skeleton> }
+                        @else { <span class="text-2xl font-bold text-900">{{ summary()?.inventoryValue | currency:'USD' }}</span> }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 sm:col-6 lg:col-3">
+            <div class="glass-card p-4 border-round-2xl hover-lift">
+                <div class="flex align-items-center gap-3">
+                    <div class="w-3rem h-3rem border-round-xl bg-red-50 text-red-600 flex align-items-center justify-content-center">
+                        <i class="pi pi-exclamation-triangle text-xl"></i>
+                    </div>
+                    <div class="flex flex-column">
+                        <span class="text-secondary font-medium text-sm">{{ 'dashboard.low_stock_alerts' | translate }}</span>
+                        @if (loading()) { <p-skeleton width="3rem" height="1.5rem"></p-skeleton> }
+                        @else { <span class="text-2xl font-bold text-900">{{ summary()?.lowStockCount }}</span> }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 sm:col-6 lg:col-3">
+            <div class="glass-card p-4 border-round-2xl hover-lift">
+                <div class="flex align-items-center gap-3">
+                    <div class="w-3rem h-3rem border-round-xl bg-purple-50 text-purple-600 flex align-items-center justify-content-center">
+                        <i class="pi pi-history text-xl"></i>
+                    </div>
+                    <div class="flex flex-column">
+                        <span class="text-secondary font-medium text-sm">{{ 'reports.total_movements' | translate }}</span>
+                        @if (loading()) { <p-skeleton width="3rem" height="1.5rem"></p-skeleton> }
+                        @else { <span class="text-2xl font-bold text-900">{{ summary()?.totalMovements }}</span> }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Grid Row 1 -->
+    <div class="grid mb-6">
+        <div class="col-12 lg:col-8">
+            <div class="glass-card p-4 border-round-2xl h-full">
+                <h3 class="m-0 mb-4 text-900 font-bold">{{ 'reports.trend_title' | translate }}</h3>
+                <div class="h-20rem">
+                    @if (loading()) { <p-skeleton width="100%" height="100%"></p-skeleton> }
+                    @else { <p-chart type="line" [data]="trendData" [options]="trendOptions" height="100%"></p-chart> }
+                </div>
+            </div>
+        </div>
+        <div class="col-12 lg:col-4">
+            <div class="glass-card p-4 border-round-2xl h-full">
+                <h3 class="m-0 mb-4 text-900 font-bold">{{ 'reports.distribution_title' | translate }}</h3>
+                <div class="h-20rem flex align-items-center justify-content-center">
+                    @if (loading()) { <p-skeleton shape="circle" size="15rem"></p-skeleton> }
+                    @else { <p-chart type="pie" [data]="typeData" [options]="typeOptions" height="100%"></p-chart> }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Grid Row 2 -->
+    <div class="grid mb-6">
+        <div class="col-12 lg:col-6">
+            <div class="glass-card p-4 border-round-2xl h-full">
+                <h3 class="m-0 mb-4 text-900 font-bold">{{ 'reports.top_products_title' | translate }}</h3>
+                <div class="h-20rem">
+                    @if (loading()) { <p-skeleton width="100%" height="100%"></p-skeleton> }
+                    @else { <p-chart type="bar" [data]="topProductsData" [options]="topProductsOptions" height="100%"></p-chart> }
+                </div>
+            </div>
+        </div>
+        <div class="col-12 lg:col-6">
+            <div class="glass-card p-4 border-round-2xl h-full">
+                <h3 class="m-0 mb-4 text-900 font-bold">{{ 'reports.category_inventory_title' | translate }}</h3>
+                <div class="h-20rem">
+                    @if (loading()) { <p-skeleton width="100%" height="100%"></p-skeleton> }
+                    @else { <p-chart type="bar" [data]="categoryData" [options]="categoryOptions" height="100%"></p-chart> }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Low Stock Table -->
+    <div class="glass-card border-round-2xl overflow-hidden mb-6">
+        <div class="p-4 bg-red-50 border-bottom-1 border-red-100 flex align-items-center gap-3 text-red-800">
+            <i class="pi pi-exclamation-triangle text-xl"></i>
+            <div>
+                <h3 class="m-0 font-bold">{{ 'reports.critical_report_title' | translate }}</h3>
+                <p class="m-0 text-sm opacity-80">{{ 'dashboard.critical_desc' | translate }}</p>
+            </div>
+        </div>
+        <p-table [value]="lowStockReport()" styleClass="modern-table">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>{{ 'dashboard.product_name' | translate }}</th>
+                    <th>{{ 'products.sku' | translate }}</th>
+                    <th class="text-center">{{ 'dashboard.current_stock' | translate }}</th>
+                    <th class="text-center">{{ 'products.critical' | translate }}</th>
+                    <th class="text-center">{{ 'reports.shortage' | translate }}</th>
+                    <th>{{ 'movements.supplier_client' | translate }}</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-item>
+                <tr>
+                    <td class="font-bold text-900">{{ item.name }}</td>
+                    <td class="text-secondary">{{ item.sku }}</td>
+                    <td class="text-center text-red-600 font-bold">{{ item.currentStock }}</td>
+                    <td class="text-center text-secondary">{{ item.minStock }}</td>
+                    <td class="text-center text-red-800 font-bold">{{ item.shortage }}</td>
+                    <td class="text-sm italic text-secondary">{{ item.supplier }}</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+
+    <!-- Export Section -->
+    <div class="glass-card p-4 border-round-2xl flex flex-column md:flex-row align-items-center justify-content-between gap-4">
+        <div>
+            <h3 class="m-0 font-bold text-900">{{ 'reports.export_title' | translate }}</h3>
+            <p class="m-0 text-sm text-secondary opacity-70">{{ 'reports.export_desc' | translate }}</p>
+        </div>
+        <div class="flex gap-2">
+            <p-button label="Export CSV" icon="pi pi-file-excel" (click)="exportCSV()" styleClass="p-button-outlined"></p-button>
+            <p-button label="Export PDF" icon="pi pi-file-pdf" (click)="exportPDF()" styleClass="p-button-outlined p-button-danger"></p-button>
+        </div>
+    </div>
+</div>

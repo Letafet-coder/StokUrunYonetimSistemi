@@ -1,0 +1,15 @@
+.critical-row {
+    background-color: rgba(245, 158, 11, 0.1) !important;
+}
+
+.out-of-stock-row {
+    background-color: rgba(239, 68, 68, 0.1) !important;
+}
+
+.p-datatable .p-datatable-tbody > tr {
+    transition: background-color 0.2s;
+}
+
+.p-datatable .p-datatable-tbody > tr:hover {
+    background-color: var(--primary-glow) !important;
+}

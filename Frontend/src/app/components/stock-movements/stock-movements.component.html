@@ -1,0 +1,254 @@
+<div class="p-4 md:p-6 fadein">
+    <!-- Header -->
+    <div class="flex flex-column md:flex-row md:align-items-center justify-content-between mb-6 gap-3">
+        <div>
+            <h1 class="text-3xl font-bold m-0 text-900 tracking-tight">{{ 'movements.title' | translate }}</h1>
+            <p class="text-secondary m-0 mt-1 opacity-70">{{ 'movements.subtitle' | translate }}</p>
+        </div>
+        <div class="flex gap-2">
+            <p-button [label]="'movements.new_movement' | translate" icon="pi pi-plus" styleClass="p-button-raised px-4 py-2 border-round-xl" (onClick)="showDialog()"></p-button>
+        </div>
+    </div>
+
+    <!-- Summary Stats -->
+    <div class="grid mb-6">
+        <div class="col-12 sm:col-6 lg:col-3">
+            <div class="glass-card p-4 border-round-2xl hover-lift border-left-3 border-green-500">
+                <div class="flex align-items-center gap-3">
+                    <div class="w-3rem h-3rem border-round-xl bg-green-50 text-green-600 flex align-items-center justify-content-center">
+                        <i class="pi pi-arrow-down-left text-xl"></i>
+                    </div>
+                    <div class="flex flex-column">
+                        <span class="text-secondary font-medium text-sm">{{ 'movements.stock_in_label' | translate }}</span>
+                        <span class="text-2xl font-bold text-900">{{ summary.stockIn }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 sm:col-6 lg:col-3">
+            <div class="glass-card p-4 border-round-2xl hover-lift border-left-3 border-red-500">
+                <div class="flex align-items-center gap-3">
+                    <div class="w-3rem h-3rem border-round-xl bg-red-50 text-red-600 flex align-items-center justify-content-center">
+                        <i class="pi pi-arrow-up-right text-xl"></i>
+                    </div>
+                    <div class="flex flex-column">
+                        <span class="text-secondary font-medium text-sm">{{ 'movements.stock_out_label' | translate }}</span>
+                        <span class="text-2xl font-bold text-900">{{ summary.stockOut }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 sm:col-6 lg:col-3">
+            <div class="glass-card p-4 border-round-2xl hover-lift border-left-3 border-blue-500">
+                <div class="flex align-items-center gap-3">
+                    <div class="w-3rem h-3rem border-round-xl bg-blue-50 text-blue-600 flex align-items-center justify-content-center">
+                        <i class="pi pi-sync text-xl"></i>
+                    </div>
+                    <div class="flex flex-column">
+                        <span class="text-secondary font-medium text-sm">{{ 'movements.adjustment_label' | translate }}</span>
+                        <span class="text-2xl font-bold text-900">{{ summary.adjustment }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 sm:col-6 lg:col-3">
+            <div class="glass-card p-4 border-round-2xl hover-lift border-left-3 border-purple-500">
+                <div class="flex align-items-center gap-3">
+                    <div class="w-3rem h-3rem border-round-xl bg-purple-50 text-purple-600 flex align-items-center justify-content-center">
+                        <i class="pi pi-arrow-right-arrow-left text-xl"></i>
+                    </div>
+                    <div class="flex flex-column">
+                        <span class="text-secondary font-medium text-sm">{{ 'movements.transfer_label' | translate }}</span>
+                        <span class="text-2xl font-bold text-900">{{ summary.transfer }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Table -->
+    <div class="glass-card border-round-2xl overflow-hidden shadow-soft">
+        <div class="p-4 bg-surface-50 border-bottom-1 border-soft flex align-items-center justify-content-between">
+            <div class="p-inputgroup w-full md:w-20rem">
+                <span class="p-inputgroup-addon bg-white border-right-none"><i class="pi pi-search text-secondary"></i></span>
+                <input pInputText type="text" [placeholder]="'movements.search_placeholder' | translate" class="border-left-none" />
+            </div>
+        </div>
+
+        <p-table [value]="movements" [rows]="10" [paginator]="true" styleClass="modern-table" 
+                 [responsiveLayout]="'scroll'" [rowsPerPageOptions]="[10,25,50]">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th style="width: 12rem">{{ 'movements.date' | translate }}</th>
+                    <th style="width: 10rem">{{ 'movements.type' | translate }}</th>
+                    <th>{{ 'movements.product' | translate }}</th>
+                    <th class="text-center" style="width: 8rem">{{ 'movements.quantity' | translate }}</th>
+                    <th>{{ 'movements.locations_header' | translate }}</th>
+                    <th>{{ 'movements.description' | translate }}</th>
+                    <th style="width: 10rem">{{ 'movements.responsible_header' | translate }}</th>
+                    <th style="width: 5rem">{{ 'common.actions' | translate }}</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-m>
+                <tr>
+                    <td>
+                        <div class="flex flex-column">
+                            <span class="font-bold text-900">{{ m.date | date:'dd.MM.yyyy' }}</span>
+                            <span class="text-xs text-secondary">{{ m.date | date:'HH:mm' }}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="flex align-items-center gap-2">
+                            @if (m.type === 0) {
+                                <p-tag severity="success" [value]="'common.in' | translate" [rounded]="true" icon="pi pi-arrow-down-left"></p-tag>
+                            } @else if (m.type === 1) {
+                                <p-tag severity="danger" [value]="'common.out' | translate" [rounded]="true" icon="pi pi-arrow-up-right"></p-tag>
+                            } @else if (m.type === 2) {
+                                <p-tag severity="info" [value]="'movements.adjustment_label' | translate" [rounded]="true" icon="pi pi-sync"></p-tag>
+                            } @else {
+                                <p-tag severity="secondary" [value]="'movements.transfer_label' | translate" [rounded]="true" icon="pi pi-arrow-right-arrow-left"></p-tag>
+                            }
+                        </div>
+                    </td>
+                    <td>
+                        <div class="flex flex-column">
+                            <span class="font-bold text-900">{{ m.product?.name }}</span>
+                            <span class="text-xs text-secondary">{{ m.product?.sku }}</span>
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        <span class="text-lg font-bold" [ngClass]="m.type === 0 ? 'text-green-600' : (m.type === 1 ? 'text-red-600' : 'text-900')">
+                            {{ m.type === 0 ? '+' : (m.type === 1 ? '-' : '') }}{{ m.quantity }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="flex align-items-center gap-2 text-sm">
+                            @if (m.type === 0) {
+                                <i class="pi pi-arrow-right text-green-500"></i> {{ m.toLocation?.name }}
+                            } @else if (m.type === 1) {
+                                {{ m.fromLocation?.name }} <i class="pi pi-arrow-right text-red-500"></i>
+                            } @else if (m.type === 3) {
+                                {{ m.fromLocation?.name }} <i class="pi pi-arrow-right text-primary"></i> {{ m.toLocation?.name }}
+                            } @else {
+                                <i class="pi pi-map-marker text-secondary"></i> {{ m.toLocation?.name || m.fromLocation?.name }}
+                            }
+                        </div>
+                    </td>
+                    <td class="text-secondary text-sm">
+                        <div class="flex flex-column gap-1">
+                            <span>{{ m.description || '---' }}</span>
+                            @if (m.documentNumber) {
+                                <span class="text-xs opacity-70"><i class="pi pi-file mr-1"></i>{{ m.documentNumber }}</span>
+                            }
+                        </div>
+                    </td>
+                    <td>
+                        <div class="flex align-items-center gap-2">
+                            <div class="w-2rem h-2rem border-circle bg-blue-50 text-blue-600 flex align-items-center justify-content-center text-xs font-bold">
+                                {{ m.createdByUser?.fullName?.charAt(0) || 'S' }}
+                            </div>
+                            <span class="text-xs">{{ m.createdByUser?.fullName || ('Sistem' | translate) }}</span>
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        <button pButton icon="pi pi-trash" class="p-button-text p-button-danger p-button-sm" 
+                                (click)="deleteMovement(m.id)" [disabled]="!authService.isAdmin()"></button>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+
+<!-- Manual Movement Dialog -->
+<p-dialog [(visible)]="displayDialog" [header]="'enterprise.manual_movement' | translate" [modal]="true" [style]="{width: '500px'}" styleClass="premium-dialog">
+    <div class="p-4">
+        <div class="flex flex-column gap-4">
+            <!-- Movement Type -->
+            <div class="field">
+                <label class="block font-bold mb-2 text-900">{{ 'movements.type_label' | translate }}</label>
+                <p-select [options]="movementLevels" [(ngModel)]="movement.type" [placeholder]="'movements.select_type_placeholder' | translate" class="w-full" appendTo="body"></p-select>
+            </div>
+
+            <!-- Product Selection -->
+            <div class="field">
+                <label class="block font-bold mb-2 text-900">{{ 'movements.product' | translate }}</label>
+                <p-select [options]="products" [(ngModel)]="movement.productId" optionLabel="name" optionValue="id" [filter]="true" 
+                          (onChange)="onProductChange($event)" [placeholder]="'movements.select_product_placeholder' | translate" class="w-full" appendTo="body"></p-select>
+            </div>
+
+            <!-- Lot/Serial Selection (Conditional) -->
+            @if (hasTracking(selectedProduct)) {
+                <div class="field fadein p-3 bg-primary-50 border-round-xl border-1 border-primary-200">
+                    <label class="block font-bold mb-2 text-primary-800 flex align-items-center gap-2">
+                        <i class="pi pi-tag"></i>
+                        {{ (isLotTracking(selectedProduct) ? ('enterprise.lot_tracking' | translate) : ('enterprise.serial_tracking' | translate)) }}
+                    </label>
+                    <p-select [options]="identifiers" [(ngModel)]="movement.lotSerialId" 
+                               optionLabel="identifier" optionValue="id" [filter]="true"
+                               [placeholder]="loadingIdentifiers ? ('common.loading' | translate) : ('enterprise.select_identifier' | translate)"
+                               [disabled]="loadingIdentifiers" class="w-full" appendTo="body">
+                        <ng-template pTemplate="item" let-id>
+                            <div class="flex flex-column">
+                                <span class="font-bold">{{id.identifier}}</span>
+                                <span class="text-xs text-secondary">{{ 'dashboard.current_stock' | translate }}: {{id.quantity}}</span>
+                            </div>
+                        </ng-template>
+                    </p-select>
+                    @if (!loadingIdentifiers && identifiers.length === 0) {
+                        <small class="text-red-600 mt-1 block font-medium">
+                            <i class="pi pi-exclamation-circle mr-1"></i>
+                            {{ 'enterprise.no_identifier_found' | translate }}
+                        </small>
+                    }
+                </div>
+            }
+
+            <!-- Quantity -->
+            <div class="field">
+                <label class="block font-bold mb-2 text-900">{{ 'movements.quantity' | translate }}</label>
+                <p-inputNumber [(ngModel)]="movement.quantity" [min]="1" [showButtons]="true" 
+                               buttonLayout="horizontal" incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus" 
+                               inputStyleClass="text-center font-bold" class="w-full"></p-inputNumber>
+            </div>
+            
+            <!-- Locations -->
+            <div class="grid row-gap-3">
+                @if (movement.type === 0 || movement.type === 2 || movement.type === 3) {
+                    <div class="col-12" [ngClass]="{'md:col-6': movement.type === 3}">
+                        <label class="block font-bold mb-2 text-900">{{ 'movements.target_location' | translate }}</label>
+                        <p-select [options]="locations" [(ngModel)]="movement.toLocationId" optionLabel="name" optionValue="id" class="w-full" appendTo="body"></p-select>
+                    </div>
+                }
+                @if (movement.type === 1 || movement.type === 3) {
+                    <div class="col-12" [ngClass]="{'md:col-6': movement.type === 3}">
+                        <label class="block font-bold mb-2 text-900">{{ 'movements.source_location' | translate }}</label>
+                        <p-select [options]="locations" [(ngModel)]="movement.fromLocationId" (onChange)="updateAvailableStock()" 
+                                  optionLabel="name" optionValue="id" class="w-full" appendTo="body"></p-select>
+                        @if (availableStock !== null) {
+                            <small class="mt-1 block" [ngClass]="availableStock < movement.quantity ? 'text-red-500 font-bold' : 'text-green-600'">
+                                <i class="pi pi-info-circle mr-1"></i>
+                                {{ 'movements.available_stock' | translate }}: {{availableStock}} {{selectedProduct?.unit}}
+                            </small>
+                        }
+                    </div>
+                }
+            </div>
+
+            <!-- Description -->
+            <div class="field">
+                <label class="block font-bold mb-2 text-900">{{ 'movements.description' | translate }}</label>
+                <textarea pInputTextarea [(ngModel)]="movement.description" rows="2" class="w-full border-round-xl" [placeholder]="'movements.desc_placeholder' | translate"></textarea>
+            </div>
+        </div>
+    </div>
+    <ng-template pTemplate="footer">
+        <div class="flex justify-content-end gap-2 px-3 pb-3">
+            <p-button [label]="'common.cancel' | translate" icon="pi pi-times" [text]="true" severity="secondary" (onClick)="displayDialog=false"></p-button>
+            <p-button [label]="'movements.save_movement' | translate" icon="pi pi-check" (onClick)="save()" styleClass="bg-primary px-4"></p-button>
+        </div>
+    </ng-template>
+</p-dialog>
+
+<p-toast></p-toast>
+<p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>

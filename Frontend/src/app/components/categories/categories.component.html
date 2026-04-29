@@ -1,0 +1,78 @@
+<div class="glass-card border-round-2xl p-4">
+    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center gap-4 mb-6">
+        <div class="flex flex-column">
+            <h2 class="m-0 font-bold text-3xl text-900 tracking-tight">{{ 'categories.title' | translate }}</h2>
+            <p class="text-secondary m-0 mt-1 opacity-70">{{ 'categories.subtitle' | translate }}</p>
+        </div>
+        <div class="flex flex-row gap-3 align-items-center">
+            <div class="relative w-full md:w-20rem">
+                <i class="pi pi-search text-dim absolute z-1" style="top: 50%; transform: translateY(-50%); left: 1rem;"></i>
+                <input pInputText type="text" (input)="dt.filterGlobal($any($event.target).value, 'contains')" [placeholder]="'categories.search_placeholder' | translate" class="w-full bg-white/50 border-soft pl-5" style="padding-left: 2.5rem !important;" />
+            </div>
+            @if (authService.isAdmin()) {
+                <p-button [label]="'categories.new_category' | translate" icon="pi pi-plus" (onClick)="showDialogToAdd()" styleClass="p-button-raised bg-primary border-none px-4 shadow-premium"></p-button>
+            }
+        </div>
+    </div>
+
+    <p-table #dt [value]="categories" [rows]="10" [paginator]="true" [responsiveLayout]="'scroll'" styleClass="modern-table"
+             [globalFilterFields]="['name']" [showCurrentPageReport]="true"
+             currentPageReportTemplate="{first}-{last} / {totalRecords}">
+        <ng-template pTemplate="header">
+            <tr>
+                <th>{{ 'categories.name' | translate }}</th>
+                <th>{{ 'categories.description' | translate }}</th>
+                <th style="width: 10rem">{{ 'common.actions' | translate }}</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-cat>
+            <tr>
+                <td class="font-bold text-900">{{cat.name}}</td>
+                <td class="text-secondary">{{cat.description || '---'}}</td>
+                <td>
+                    <div class="flex gap-2">
+                        @if (authService.isAdmin()) {
+                            <p-button icon="pi pi-pencil" (onClick)="editCategory(cat)" styleClass="p-button-text p-button-sm p-button-primary" [pTooltip]="'common.edit' | translate"></p-button>
+                            <p-button icon="pi pi-trash" (onClick)="deleteCategory(cat)" styleClass="p-button-text p-button-sm p-button-danger" [pTooltip]="'common.delete' | translate"></p-button>
+                        }
+                    </div>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td [attr.colspan]="3" class="p-0">
+                    <div class="flex flex-column align-items-center justify-content-center py-8 bg-50 border-round-bottom-xl">
+                        <div class="w-5rem h-5rem bg-white border-circle flex align-items-center justify-content-center shadow-1 mb-4">
+                            <i class="pi pi-tags text-4xl text-gray-300"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-900 mb-2">{{ 'categories.not_found' | translate }}</h3>
+                        <p class="text-secondary mb-4">{{ 'categories.not_found_desc' | translate }}</p>
+                        @if (authService.isAdmin()) {
+                            <p-button [label]="'categories.add_first' | translate" icon="pi pi-plus" (onClick)="showDialogToAdd()" styleClass="p-button-raised p-button-primary px-5"></p-button>
+                        }
+                    </div>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<p-dialog [header]="(isEdit ? 'categories.edit_title' : 'categories.new_category') | translate" [(visible)]="displayDialog" [modal]="true" [style]="{width: '450px'}">
+    <div class="grid p-fluid row-gap-3 mt-2">
+        <div class="col-12">
+            <label for="name" class="block font-bold mb-2">{{ 'categories.name' | translate }}</label>
+            <input pInputText id="name" [(ngModel)]="category.name" required autofocus class="w-full" autocomplete="off" />
+        </div>
+        <div class="col-12">
+            <label for="description" class="block font-bold mb-2">{{ 'categories.description' | translate }}</label>
+            <textarea pInputTextarea id="description" [(ngModel)]="category.description" rows="3" class="w-full" [placeholder]="'categories.description' | translate"></textarea>
+        </div>
+    </div>
+    <ng-template pTemplate="footer">
+        <p-button [label]="'common.cancel' | translate" icon="pi pi-times" (onClick)="displayDialog=false" styleClass="p-button-text"></p-button>
+        <p-button [label]="'common.save' | translate" icon="pi pi-check" (onClick)="save()" [loading]="loading" styleClass="p-button-raised"></p-button>
+    </ng-template>
+</p-dialog>
+
+<p-toast></p-toast>

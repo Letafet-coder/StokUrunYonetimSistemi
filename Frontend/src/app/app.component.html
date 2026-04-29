@@ -1,0 +1,217 @@
+<div class="main-wrapper" [ngClass]="{'authenticated': authService.isAuthenticated()}">
+  
+  @if (authService.isAuthenticated()) {
+    <div class="flex h-screen overflow-hidden">
+      <!-- Sidebar -->
+      <aside class="glass-sidebar flex-shrink-0 flex flex-column transition-all duration-300 shadow-4" 
+             [style.width]="isSidebarCollapsed() ? '70px' : '260px'">
+        <div class="p-4 flex align-items-center gap-3 border-bottom-1 border-50 mb-2 overflow-hidden" style="white-space: nowrap;">
+          <div class="logo-box shadow-3 flex align-items-center justify-content-center shrink-0">
+            <i class="pi pi-box text-white text-xl"></i>
+          </div>
+          <div class="flex flex-column transition-all duration-200" [style.opacity]="isSidebarCollapsed() ? '0' : '1'" [style.visibility]="isSidebarCollapsed() ? 'hidden' : 'visible'" style="gap: 2px;">
+            <span class="text-xl font-bold tracking-tighter text-900" style="line-height: 1;">LagerMaster</span>
+            <span class="text-xs text-secondary font-bold uppercase letter-spacing-1" style="font-size: 9px; line-height: 1; opacity: 0.6;">v2.0 Premium</span>
+          </div>
+        </div>
+
+        <nav class="flex-1 px-3 py-4 overflow-x-hidden overflow-y-auto custom-scrollbar">
+          <a routerLink="/dashboard" routerLinkActive="active-nav" class="nav-item" [pTooltip]="'nav.dashboard' | translate" [tooltipDisabled]="!isSidebarCollapsed()" tooltipPosition="right">
+            <i class="pi pi-th-large"></i>
+            <span class="nav-text" [class.hidden-text]="isSidebarCollapsed()">{{ 'nav.dashboard' | translate }}</span>
+          </a>
+          <a routerLink="/categories" routerLinkActive="active-nav" class="nav-item" [pTooltip]="'nav.categories' | translate" [tooltipDisabled]="!isSidebarCollapsed()" tooltipPosition="right">
+            <i class="pi pi-tags"></i>
+            <span class="nav-text" [class.hidden-text]="isSidebarCollapsed()">{{ 'nav.categories' | translate }}</span>
+          </a>
+          <a routerLink="/products" routerLinkActive="active-nav" class="nav-item" [pTooltip]="'nav.products' | translate" [tooltipDisabled]="!isSidebarCollapsed()" tooltipPosition="right">
+            <i class="pi pi-box"></i>
+            <span class="nav-text" [class.hidden-text]="isSidebarCollapsed()">{{ 'nav.products' | translate }}</span>
+          </a>
+          <a routerLink="/movements" routerLinkActive="active-nav" class="nav-item" [pTooltip]="'nav.movements' | translate" [tooltipDisabled]="!isSidebarCollapsed()" tooltipPosition="right">
+            <i class="pi pi-arrow-right-arrow-left"></i>
+            <span class="nav-text" [class.hidden-text]="isSidebarCollapsed()">{{ 'nav.movements' | translate }}</span>
+          </a>
+          <a routerLink="/inventory-audit" routerLinkActive="active-nav" class="nav-item" [pTooltip]="'nav.inventory_audit' | translate" [tooltipDisabled]="!isSidebarCollapsed()" tooltipPosition="right">
+            <i class="pi pi-check-square"></i>
+            <span class="nav-text" [class.hidden-text]="isSidebarCollapsed()">{{ 'nav.inventory_audit' | translate }}</span>
+          </a>
+
+          <div class="nav-separator" [class.hidden-text]="isSidebarCollapsed()"></div>
+          
+          <a routerLink="/warehouses" routerLinkActive="active-nav" class="nav-item" [pTooltip]="'enterprise.warehouses' | translate" [tooltipDisabled]="!isSidebarCollapsed()" tooltipPosition="right">
+            <i class="pi pi-building"></i>
+            <span class="nav-text" [class.hidden-text]="isSidebarCollapsed()">{{ 'enterprise.warehouses' | translate }}</span>
+          </a>
+          <a routerLink="/locations" routerLinkActive="active-nav" class="nav-item" [pTooltip]="'enterprise.locations' | translate" [tooltipDisabled]="!isSidebarCollapsed()" tooltipPosition="right">
+            <i class="pi pi-map-marker"></i>
+            <span class="nav-text" [class.hidden-text]="isSidebarCollapsed()">{{ 'enterprise.locations' | translate }}</span>
+          </a>
+          <a routerLink="/lots" routerLinkActive="active-nav" class="nav-item" [pTooltip]="'enterprise.lots_serials' | translate" [tooltipDisabled]="!isSidebarCollapsed()" tooltipPosition="right">
+            <i class="pi pi-barcode"></i>
+            <span class="nav-text" [class.hidden-text]="isSidebarCollapsed()">{{ 'enterprise.lots_serials' | translate }}</span>
+          </a>
+
+          <!-- Admin-only: Kullanıcı Yönetimi & Raporlar -->
+          @if (authService.isAdmin()) {
+            <div class="nav-separator" [class.hidden-text]="isSidebarCollapsed()"></div>
+            <a routerLink="/users" routerLinkActive="active-nav" class="nav-item nav-item-admin" [pTooltip]="'nav.users' | translate" [tooltipDisabled]="!isSidebarCollapsed()" tooltipPosition="right">
+              <i class="pi pi-users"></i>
+              <span class="nav-text" [class.hidden-text]="isSidebarCollapsed()">{{ 'nav.users' | translate }}</span>
+            </a>
+            <a routerLink="/reports" routerLinkActive="active-nav" class="nav-item nav-item-admin" [pTooltip]="'nav.reports' | translate" [tooltipDisabled]="!isSidebarCollapsed()" tooltipPosition="right">
+              <i class="pi pi-chart-bar"></i>
+              <span class="nav-text" [class.hidden-text]="isSidebarCollapsed()">{{ 'nav.reports' | translate }}</span>
+            </a>
+            <a routerLink="/invoices" routerLinkActive="active-nav" class="nav-item nav-item-admin" [pTooltip]="'nav.invoices' | translate" [tooltipDisabled]="!isSidebarCollapsed()" tooltipPosition="right">
+              <i class="pi pi-receipt"></i>
+              <span class="nav-text" [class.hidden-text]="isSidebarCollapsed()">{{ 'nav.invoices' | translate }}</span>
+            </a>
+            <a routerLink="/bulk-stock" routerLinkActive="active-nav" class="nav-item nav-item-admin" [pTooltip]="'nav.bulk_stock' | translate" [tooltipDisabled]="!isSidebarCollapsed()" tooltipPosition="right">
+              <i class="pi pi-table"></i>
+              <span class="nav-text" [class.hidden-text]="isSidebarCollapsed()">{{ 'nav.bulk_stock' | translate }}</span>
+            </a>
+          }
+
+          <!-- SuperAdmin-only: Sistem Yönetimi -->
+          @if (authService.isSuperAdmin()) {
+            <div class="nav-separator" [class.hidden-text]="isSidebarCollapsed()"></div>
+            <a routerLink="/system-management" routerLinkActive="active-nav" class="nav-item nav-item-admin" [pTooltip]="'nav.system_management' | translate" [tooltipDisabled]="!isSidebarCollapsed()" tooltipPosition="right" style="color: #6366f1;">
+              <i class="pi pi-shield"></i>
+              <span class="nav-text" [class.hidden-text]="isSidebarCollapsed()">{{ 'nav.system_management' | translate }}</span>
+            </a>
+          }
+
+          <a routerLink="/settings" routerLinkActive="active-nav" class="nav-item" [pTooltip]="'nav.settings' | translate" [tooltipDisabled]="!isSidebarCollapsed()" tooltipPosition="right">
+            <i class="pi pi-sliders-h"></i>
+            <span class="nav-text" [class.hidden-text]="isSidebarCollapsed()">{{ 'nav.settings' | translate }}</span>
+          </a>
+        </nav>
+
+        <div class="p-3 border-top-1 border-50">
+          <div class="user-card p-2 flex align-items-center gap-3 border-round-xl cursor-pointer overflow-hidden" routerLink="/profile" [pTooltip]="'nav.profile' | translate" [tooltipDisabled]="!isSidebarCollapsed()" tooltipPosition="right">
+            <div class="w-2rem h-2rem shrink-0 border-circle bg-primary-gradient flex align-items-center justify-content-center text-white shadow-2">
+              <span class="font-bold text-xs">{{ authService.currentUser()?.fullName?.charAt(0) }}</span>
+            </div>
+            <div class="flex-1 overflow-hidden transition-all duration-200" [style.opacity]="isSidebarCollapsed() ? '0' : '1'" [style.visibility]="isSidebarCollapsed() ? 'hidden' : 'visible'">
+              <p class="text-xs font-bold text-900 m-0 truncate">{{ authService.currentUser()?.fullName }}</p>
+              <p class="text-secondary m-0" style="font-size: 10px;">
+                {{ 
+                  authService.isSuperAdmin() ? ('header.super_admin_tag' | translate) : 
+                  (authService.isAdmin() ? ('header.admin_tag' | translate) : ('header.user_tag' | translate)) 
+                }}
+              </p>
+            </div>
+          </div>
+          <button (click)="authService.logout()" class="logout-btn w-full mt-3 p-2 border-none border-round-lg cursor-pointer flex align-items-center justify-content-center gap-2 overflow-hidden" [pTooltip]="'nav.logout' | translate" [tooltipDisabled]="!isSidebarCollapsed()" tooltipPosition="right">
+            <i class="pi pi-power-off"></i>
+            <span class="transition-all duration-200" [style.opacity]="isSidebarCollapsed() ? '0' : '1'" [style.visibility]="isSidebarCollapsed() ? 'hidden' : 'visible'">{{ 'nav.logout' | translate }}</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="flex-1 flex flex-column overflow-hidden bg-content">
+        <header class="h-4rem flex align-items-center justify-content-between px-4 z-10">
+          <div class="flex align-items-center gap-3">
+            <button class="header-btn toggle-btn" (click)="toggleSidebar()">
+                <i class="pi" [ngClass]="isSidebarCollapsed() ? 'pi-bars' : 'pi-align-left'"></i>
+            </button>
+          </div>
+          <div class="flex align-items-center gap-3">
+            
+            <div class="header-divider h-2rem w-1px bg-300"></div>
+
+            <!-- Language Switcher -->
+            <button class="header-btn" (click)="langMenu.toggle($event)" [pTooltip]="'header.lang_switch' | translate">
+              <span class="font-bold text-sm">{{ langService.currentLang() | uppercase }}</span>
+            </button>
+            <p-menu #langMenu [model]="langItems" [popup]="true" appendTo="body"></p-menu>
+            
+            <!-- Theme Toggle -->
+            <button class="header-btn" (click)="themeService.toggleDarkMode()" [pTooltip]="'header.theme_toggle' | translate">
+              <i class="pi" [ngClass]="themeService.isDarkMode() ? 'pi-sun' : 'pi-moon'"></i>
+            </button>
+            
+            <!-- Notifications -->
+            <div class="badge-container">
+              <button class="header-btn" (click)="op.toggle($event); handleNotificationClick()">
+                <i class="pi pi-bell"></i>
+              </button>
+              @if (notifService.unreadCount() > 0) {
+                <span class="notification-badge">{{ notifService.unreadCount() }}</span>
+              }
+            </div>
+
+            <p-popover #op [style]="{width: '350px'}" appendTo="body">
+              <div class="flex flex-column gap-3">
+                <div class="flex align-items-center justify-content-between border-bottom-1 border-100 pb-2">
+                  <span class="font-bold">{{ 'header.notifications' | translate }}</span>
+                  <div class="flex align-items-center gap-2">
+                    <span class="text-xs text-secondary">{{ notifService.notifications().length }}</span>
+                    <p-button 
+                      icon="pi pi-trash" 
+                      [text]="true" 
+                      severity="secondary" 
+                      size="small"
+                      [pTooltip]="'common.delete_all' | translate"
+                      (onClick)="notifService.clearAll()">
+                    </p-button>
+                  </div>
+                </div>
+                
+                <div class="flex flex-column gap-2 max-h-20rem overflow-y-auto custom-scrollbar">
+                  @for (n of notifService.notifications(); track n.id) {
+                    <div class="p-3 border-round hover:surface-hover cursor-pointer flex gap-3 align-items-start border-bottom-1 border-200 relative transition-colors duration-200">
+                      <!-- Icon -->
+                      <div class="w-2.5rem h-2.5rem border-circle flex align-items-center justify-content-center shrink-0 mt-1" 
+                           [ngClass]="n.type === 'warn' ? 'bg-orange-100 text-orange-600' : 'bg-blue-100 text-blue-600'">
+                        <i class="pi text-xl" [ngClass]="n.type === 'warn' ? 'pi-exclamation-triangle' : 'pi-info-circle'"></i>
+                      </div>
+                      
+                      <!-- Content -->
+                      <div class="flex flex-column gap-1 overflow-hidden flex-1 pr-4">
+                        <span class="text-sm font-bold text-900 line-height-3 pr-3">{{ n.titleKey | translate:n.detailParams }}</span>
+                        <span class="text-xs text-600 font-medium">{{ 'header.low_stock_detail' | translate:n.detailParams }}</span>
+                        <span class="text-xs text-400 mt-2 font-medium flex align-items-center gap-1"><i class="pi pi-clock" style="font-size: 0.7rem;"></i> {{ n.date | date:'shortTime' }}</span>
+                      </div>
+
+                      <div class="flex gap-1 absolute" style="top: 0.75rem; right: 0.75rem;">
+                        @if (!n.read) {
+                          <button pButton pRipple icon="pi pi-check" class="p-button-rounded p-button-text p-button-success w-2rem h-2rem p-0" (click)="notifService.markAsRead(n.id); $event.stopPropagation()"></button>
+                        }
+                        <button pButton pRipple icon="pi pi-times" class="p-button-rounded p-button-text p-button-secondary w-2rem h-2rem p-0 text-400 hover:text-red-500 hover:bg-red-50 transition-colors duration-200" (click)="notifService.removeNotification(n.id); $event.stopPropagation()"></button>
+                      </div>
+                    </div>
+                  } @empty {
+                    <div class="text-center py-4 text-secondary">
+                      <i class="pi pi-bell-slash text-2xl mb-2"></i>
+                      <p class="m-0">{{ 'header.no_notifications' | translate }}</p>
+                    </div>
+                  }
+                </div>
+              </div>
+            </p-popover>
+
+            <div class="header-divider h-2rem w-1px bg-300 hidden sm:block"></div>
+            
+            <p-tag [value]="(authService.isSuperAdmin() ? 'header.super_admin_tag' : (authService.isAdmin() ? 'header.admin_tag' : 'header.user_tag')) | translate" 
+                   [severity]="authService.isSuperAdmin() ? 'danger' : (authService.isAdmin() ? 'success' : 'info')" 
+                   class="hidden sm:block"></p-tag>
+          </div>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-4 md:p-5">
+          <router-outlet></router-outlet>
+        </div>
+      </main>
+    </div>
+  } @else {
+    <router-outlet></router-outlet>
+  }
+
+</div>
+
+<p-confirmDialog [style]="{width: '450px'}" acceptLabel="Evet" rejectLabel="Hayır" appendTo="body"></p-confirmDialog>
+
+<p-toast></p-toast>
